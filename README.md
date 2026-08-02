@@ -2,16 +2,31 @@
 
 ## Database Setup
 
-1. Create a MySQL database:
+This project uses separate databases for `dev` and `test` profiles.
+
+### Development (`dev`) Profile
+
+1. Create the development database:
 
 ```sql
 CREATE DATABASE portfolio_manager;
-USE portfolio_manager
+USE portfolio_manager;
 ```
 
-2. Start the Spring Boot application using the **dev** profile.
+2. Start the Spring Boot application using the `dev` profile.
 
 On the first run, Spring Boot will automatically create the required tables and initialize the database (if initialization scripts are present).
+
+### Testing (`test`) Profile
+
+1. Create the test database:
+
+```sql
+CREATE DATABASE portfolio_manager_test;
+USE portfolio_manager_test;
+```
+
+2. Run tests using the `test` profile so test data stays isolated from development data.
 
 ## Git Workflow
 
