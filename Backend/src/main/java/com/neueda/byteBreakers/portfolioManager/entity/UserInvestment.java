@@ -7,16 +7,16 @@ public class UserInvestment {
     private Long id;
     private Long investmentOptionId;
     private BigDecimal quantity;
-    private BigDecimal boughtPrice;
+    private BigDecimal totalInvested;
     private LocalDate purchaseDate;
 
     public UserInvestment() {
     }
 
-    public UserInvestment(Long investmentOptionId, BigDecimal quantity, BigDecimal boughtPrice, LocalDate purchaseDate) {
+    public UserInvestment(Long investmentOptionId, BigDecimal quantity, BigDecimal totalInvested, LocalDate purchaseDate) {
         this.investmentOptionId = investmentOptionId;
         this.quantity = quantity;
-        this.boughtPrice = boughtPrice;
+        this.totalInvested = totalInvested;
         this.purchaseDate = purchaseDate;
     }
 
@@ -44,12 +44,12 @@ public class UserInvestment {
         this.quantity = quantity;
     }
 
-    public BigDecimal getBoughtPrice() {
-        return boughtPrice;
+    public BigDecimal getTotalInvested() {
+        return totalInvested;
     }
 
-    public void setBoughtPrice(BigDecimal boughtPrice) {
-        this.boughtPrice = boughtPrice;
+    public void setTotalInvested(BigDecimal totalInvested) {
+        this.totalInvested = totalInvested;
     }
 
     public LocalDate getPurchaseDate() {

@@ -44,23 +44,23 @@ VALUES
 
 
 INSERT INTO user_investments
-(investment_option_id, quantity, bought_price, purchase_date)
+(investment_option_id, quantity, total_invested, purchase_date)
 VALUES
 
 -- Apple
-(1, 10, 180.00, '2026-01-15'),
+(1, 10.00, 1800.00, '2026-01-15'),
 
 -- Microsoft
-(2, 5, 400.00, '2026-02-10'),
+(2, 5.00, 2000.00, '2026-02-10'),
 
 -- Gold ETF
-(6, 20, 5800.00, '2026-01-20'),
+(6, 20.00, 116000.00, '2026-01-20'),
 
 -- Residential REIT
-(8, 3, 11000.00, '2026-03-05'),
+(8, 3.00, 33000.00, '2026-03-05'),
 
 -- Nifty 50 Index Fund
-(9, 50, 220.00, '2026-02-25'),
+(9, 50.00, 11000.00, '2026-02-25'),
 
 -- Bitcoin
-(11, 0.05, 55000.00, '2026-04-01');
+(11, 0.05, 2750.00, '2026-04-01');
