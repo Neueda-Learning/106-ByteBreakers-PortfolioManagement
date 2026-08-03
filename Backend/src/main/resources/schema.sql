@@ -27,7 +27,7 @@ CREATE TABLE user_investments (
 
     quantity DECIMAL(12,2) NOT NULL,
 
-    bought_price DECIMAL(12,2) NOT NULL,
+    total_invested DECIMAL(12,2) NOT NULL,
 
     purchase_date DATE NOT NULL,
 
