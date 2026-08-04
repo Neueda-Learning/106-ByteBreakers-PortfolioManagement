@@ -1,36 +1,45 @@
-import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
-import { MainLayout } from './layouts/MainLayout'
-import { DashboardPage } from './pages/DashboardPage'
-import { InvestmentOptionsPage } from './pages/InvestmentOptionsPage'
-import { InvestmentsPage } from './pages/InvestmentsPage'
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
+
+import Layout from "@/components/layout/Layout";
+
+import Dashboard from "@/pages/Dashboard";
+import InvestmentOptions from "@/pages/InvestmentOptions";
+// import InvestmentExplorer from "@/pages/InvestmentExplorer";
+// import MarketSimulation from "@/pages/MarketSimulation";
+
+import { ROUTES } from "@/constants/routes";
 
 const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <MainLayout />,
-        children: [
-            {
-                index: true,
-                element: <DashboardPage />,
-            },
-            {
-                path: 'investments',
-                element: <InvestmentsPage />,
-            },
-            {
-                path: 'investment-options',
-                element: <InvestmentOptionsPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/" replace />,
-            },
-        ],
-    },
-])
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: ROUTES.INVESTMENTOPTIONS,
+        element: <InvestmentOptions />,
+      },
+      // {
+      //   path: ROUTES.EXPLORER,
+      //   element: <InvestmentExplorer />,
+      // },
+      // {
+      //   path: ROUTES.SIMULATION,
+      //   element: <MarketSimulation />,
+      // },
+      {
+        path: "*",
+        element: <Navigate to="/" replace />,
+      },
+    ],
+  },
+]);
 
 function App() {
-    return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
