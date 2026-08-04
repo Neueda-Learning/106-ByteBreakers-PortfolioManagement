@@ -1,4 +1,4 @@
-package com.neueda.byteBreakers.portfolioManager.entity;
+package com.neueda.portfolio.entity;
 
 import java.math.BigDecimal;
 
