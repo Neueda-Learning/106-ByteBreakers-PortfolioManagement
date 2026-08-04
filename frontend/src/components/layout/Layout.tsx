@@ -11,6 +11,11 @@ const Layout = () => {
                 breakpoint: "sm",
             }}
             padding="md"
+            styles={(theme) => ({
+                main: {
+                    backgroundColor: theme.colors.brand[0],
+                },
+            })}
         >
             <Sidebar />
 

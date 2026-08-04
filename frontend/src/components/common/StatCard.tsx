@@ -52,6 +52,10 @@ const StatCard = ({
             radius="lg"
             shadow="sm"
             p="lg"
+            sx={(theme) => ({
+                backgroundColor: theme.colors.brand[0],
+                borderColor: theme.colors.brand[2],
+            })}
         >
             <Stack gap="xs">
 
@@ -67,7 +71,7 @@ const StatCard = ({
                     {icon && (
                         <ThemeIcon
                             variant="light"
-                            color="blue"
+                            color="brand"
                         >
                             {icon}
                         </ThemeIcon>

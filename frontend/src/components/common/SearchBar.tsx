@@ -18,6 +18,9 @@ const SearchBar = ({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             leftSection={<IconSearch size={16} />}
+            variant="filled"
+            color="brand"
+            radius="md"
             __clearable
         />
     );

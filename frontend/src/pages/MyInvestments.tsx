@@ -94,7 +94,7 @@ const Investments = () => {
                 accessorKey: "category",
                 header: "Category",
                 cell: ({ row }) => (
-                    <StatusBadge color="blue">
+                    <StatusBadge color="brand">
                         {row.original.category}
                     </StatusBadge>
                 ),
@@ -155,6 +155,7 @@ const Investments = () => {
                 cell: () => (
                     <Button
                         variant="light"
+                        color="brand"
                         size="xs"
                     >
                         View Details
@@ -223,6 +224,9 @@ const Investments = () => {
                                     "Bond",
                                 ]}
                                 w={180}
+                                variant="filled"
+                                color="brand"
+                                radius="md"
                             />
                         </>
                     }
@@ -235,6 +239,9 @@ const Investments = () => {
                                 "Current Value",
                             ]}
                             w={180}
+                            variant="filled"
+                            color="brand"
+                            radius="md"
                         />
                     }
                 />
