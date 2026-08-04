@@ -203,48 +203,49 @@ const Investments = () => {
                 />
             </SimpleGrid>
 
-            <SectionCard title="My Investments">
+            <SectionCard title="My Investments"
+                rightSection={
+                    <Toolbar
+                        leftSection={
+                            <>
+                                <SearchBar
+                                    value={search}
+                                    onChange={setSearch}
+                                    placeholder="Search investments..."
+                                />
 
-                <Toolbar
-                    leftSection={
-                        <>
-                            <SearchBar
-                                value={search}
-                                onChange={setSearch}
-                                placeholder="Search investments..."
-                            />
-
+                                <Select
+                                    placeholder="Category"
+                                    data={[
+                                        "All",
+                                        "Equity",
+                                        "Mutual Fund",
+                                        "Crypto",
+                                        "Bond",
+                                    ]}
+                                    w={180}
+                                    variant="filled"
+                                    color="brand"
+                                    radius="md"
+                                />
+                            </>
+                        }
+                        rightSection={
                             <Select
-                                placeholder="Category"
+                                placeholder="Sort"
                                 data={[
-                                    "All",
-                                    "Equity",
-                                    "Mutual Fund",
-                                    "Crypto",
-                                    "Bond",
+                                    "Name",
+                                    "Profit/Loss",
+                                    "Current Value",
                                 ]}
                                 w={180}
                                 variant="filled"
                                 color="brand"
                                 radius="md"
                             />
-                        </>
-                    }
-                    rightSection={
-                        <Select
-                            placeholder="Sort"
-                            data={[
-                                "Name",
-                                "Profit/Loss",
-                                "Current Value",
-                            ]}
-                            w={180}
-                            variant="filled"
-                            color="brand"
-                            radius="md"
-                        />
-                    }
-                />
+                        }
+                    />
+                }>
 
                 <DataTable table={table} />
 
