@@ -184,7 +184,7 @@ const Investments = () => {
     return (
         <PageContainer title="My Investments">
 
-            <SimpleGrid cols={3}>
+            <SimpleGrid cols={3} spacing="md" mb="lg">
                 <StatCard
                     title="Portfolio Value"
                     value="₹7,24,300"

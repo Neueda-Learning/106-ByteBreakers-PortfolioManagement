@@ -16,7 +16,7 @@ const SectionCard = ({
 }: SectionCardProps) => {
     return (
         <Card
-            shadow="sm"
+            shadow="md"
             radius="lg"
             withBorder
             p="lg"
