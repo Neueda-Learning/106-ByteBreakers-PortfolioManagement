@@ -1,7 +1,8 @@
-package com.neueda.byteBreakers.portfolioManager.service;
+package com.neueda.portfolio.service;
 
-import com.neueda.byteBreakers.portfolioManager.entity.UserInvestment;
-import com.neueda.byteBreakers.portfolioManager.repository.UserInvestmentRepository;
+import com.neueda.portfolio.repository.UserInvestmentRepository;
+import com.neueda.portfolio.entity.UserInvestment;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class UserInvestmentService
     private UserInvestmentRepository userInvestmentRepository;
 
     public List<UserInvestment> getAllUserInvestments() {
-        return userInvestmentRepository.getAllUserInvestments();
+        return userInvestmentRepository.findAllWithOption();
     }
 
     public int createUserInvestment(UserInvestment userInvestment) {

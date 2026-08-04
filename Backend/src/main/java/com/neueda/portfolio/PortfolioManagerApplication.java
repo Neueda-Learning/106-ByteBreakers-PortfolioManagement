@@ -1,4 +1,4 @@
-package com.neueda.byteBreakers.portfolioManager;
+package com.neueda.portfolio;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
