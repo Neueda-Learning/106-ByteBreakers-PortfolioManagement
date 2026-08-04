@@ -1,4 +1,4 @@
- package com.neueda.byteBreakers.portfolioManager.diversify.dto;
+ package com.neueda.portfolio.diversify.dto;
 
 public class SuggestionDTO {
 

@@ -1,11 +1,11 @@
-package com.neueda.byteBreakers.portfolioManager.diversify.service;
+package com.neueda.portfolio.diversify.service;
 
 
-import com.neueda.byteBreakers.portfolioManager.diversify.dto.SuggestionDTO;
-import com.neueda.byteBreakers.portfolioManager.entity.InvestmentOption;
-import com.neueda.byteBreakers.portfolioManager.entity.UserInvestment;
-import com.neueda.byteBreakers.portfolioManager.repository.InvestmentOptionRepository;
-import com.neueda.byteBreakers.portfolioManager.repository.UserInvestmentRepository;
+import com.neueda.portfolio.diversify.dto.SuggestionDTO;
+import com.neueda.portfolio.entity.InvestmentOption;
+import com.neueda.portfolio.entity.UserInvestment;
+import com.neueda.portfolio.repository.InvestmentOptionRepository;
+import com.neueda.portfolio.repository.UserInvestmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

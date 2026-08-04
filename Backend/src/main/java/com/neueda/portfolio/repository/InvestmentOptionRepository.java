@@ -1,5 +1,5 @@
-package com.neueda.byteBreakers.portfolioManager.repository;
-import com.neueda.byteBreakers.portfolioManager.entity.InvestmentOption;
+package com.neueda.portfolio.repository;
+import com.neueda.portfolio.entity.InvestmentOption;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

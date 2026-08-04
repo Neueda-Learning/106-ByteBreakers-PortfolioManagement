@@ -1,7 +1,7 @@
-package com.neueda.byteBreakers.portfolioManager.controller;
+package com.neueda.portfolio.controller;
 
-import com.neueda.byteBreakers.portfolioManager.entity.UserInvestment;
-import com.neueda.byteBreakers.portfolioManager.service.UserInvestmentService;
+import com.neueda.portfolio.entity.UserInvestment;
+import com.neueda.portfolio.service.UserInvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
