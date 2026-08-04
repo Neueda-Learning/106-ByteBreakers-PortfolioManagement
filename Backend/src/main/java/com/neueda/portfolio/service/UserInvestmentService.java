@@ -33,4 +33,5 @@ public class UserInvestmentService
     public int deleteUserInvestment(Long id) {
         return userInvestmentRepository.deleteUserInvestment(id);
     }
+
 }
