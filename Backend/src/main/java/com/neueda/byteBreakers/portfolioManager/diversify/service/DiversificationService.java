@@ -6,6 +6,7 @@ import com.neueda.byteBreakers.portfolioManager.entity.InvestmentOption;
 import com.neueda.byteBreakers.portfolioManager.entity.UserInvestment;
 import com.neueda.byteBreakers.portfolioManager.repository.InvestmentOptionRepository;
 import com.neueda.byteBreakers.portfolioManager.repository.UserInvestmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,14 @@ import java.util.stream.Collectors;
 @Service
 public class DiversificationService {
 
-    private final InvestmentOptionRepository optionRepo;
-    private final UserInvestmentRepository userInvestmentRepo;
+    @Autowired
+    private UserInvestmentRepository userInvestmentRepo ;
+     @Autowired
+     private InvestmentOptionRepository optionRepo;
+
+
+
+
 
     @Value("${diversify.weight.concentration:0.40}")
     private double weightConcentration;
@@ -34,15 +41,12 @@ public class DiversificationService {
     @Value("${diversify.overweight-multiplier:1.5}")
     private double overweightMultiplier; // category counted "overweight" past target * this
 
-    public DiversificationService(InvestmentOptionRepository optionRepo,
-                                   UserInvestmentRepository userInvestmentRepo) {
-        this.optionRepo = optionRepo;
-        this.userInvestmentRepo = userInvestmentRepo;
-    }
+//
 
     public List<SuggestionDTO> getSuggestions(int topN) {
         List<UserInvestment> holdings = userInvestmentRepo.findAllWithOption();
         List<InvestmentOption> allOptions = optionRepo.findAll();
+
 
         Map<String, Double> currentAllocationPct = computeCurrentAllocation(holdings);
         Map<String, Double> avgReturnByCategory = computePersonalReturns(holdings);
@@ -97,6 +101,11 @@ public class DiversificationService {
 
         suggestions.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
         return suggestions.stream().limit(topN).collect(Collectors.toList());
+    }
+    public Map<String, Double> CurrentAllocation() {
+        List<UserInvestment> holdings = userInvestmentRepo.findAllWithOption();
+        List<InvestmentOption> allOptions = optionRepo.findAll();
+        return computeCurrentAllocation(holdings);
     }
 
     // -----------------------------------------------------------------
