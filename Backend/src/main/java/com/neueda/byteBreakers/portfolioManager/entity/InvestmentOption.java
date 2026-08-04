@@ -1,4 +1,4 @@
-package com.example.diversify.model;
+package com.neueda.byteBreakers.portfolioManager.entity;
 
 import java.math.BigDecimal;
 

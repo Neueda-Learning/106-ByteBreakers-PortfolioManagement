@@ -1,11 +1,9 @@
-package com.example.diversify.repository;
-
-import com.example.diversify.model.InvestmentOption;
+package com.neueda.byteBreakers.portfolioManager.repository;
+import com.neueda.byteBreakers.portfolioManager.entity.InvestmentOption;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 

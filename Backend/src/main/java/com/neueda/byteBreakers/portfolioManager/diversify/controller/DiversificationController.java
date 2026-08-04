@@ -1,7 +1,8 @@
-package com.example.diversify.controller;
+package com.neueda.byteBreakers.portfolioManager.diversify.controller;
 
-import com.example.diversify.dto.SuggestionDTO;
-import com.example.diversify.service.DiversificationService;
+;
+import com.neueda.byteBreakers.portfolioManager.diversify.dto.SuggestionDTO;
+import com.neueda.byteBreakers.portfolioManager.diversify.service.DiversificationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,14 +1,14 @@
-package com.example.diversify.service;
+package com.neueda.byteBreakers.portfolioManager.diversify.service;
 
-import com.example.diversify.dto.SuggestionDTO;
-import com.example.diversify.model.InvestmentOption;
-import com.example.diversify.model.UserInvestment;
-import com.example.diversify.repository.InvestmentOptionRepository;
-import com.example.diversify.repository.UserInvestmentRepository;
+
+import com.neueda.byteBreakers.portfolioManager.diversify.dto.SuggestionDTO;
+import com.neueda.byteBreakers.portfolioManager.entity.InvestmentOption;
+import com.neueda.byteBreakers.portfolioManager.entity.UserInvestment;
+import com.neueda.byteBreakers.portfolioManager.repository.InvestmentOptionRepository;
+import com.neueda.byteBreakers.portfolioManager.repository.UserInvestmentRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -80,7 +80,7 @@ public class DiversificationService {
             double finalScore = rawScore * (1 - riskPenalty);
 
             if (overweight) {
-                finalScore *= 0.2; // deprioritize sharply, don't fully hide it
+                finalScore *= 0.2;
             }
 
             String reason = buildReason(category, currentPct, targetAllocation,

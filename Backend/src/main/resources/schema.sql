@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS user_investments;
 DROP TABLE IF EXISTS investment_options;
 
-
 CREATE TABLE investment_options (
 
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -14,10 +13,11 @@ CREATE TABLE investment_options (
 
     trend VARCHAR(20) NOT NULL,
 
-    estimated_return DECIMAL(5,2)
+    estimated_return DECIMAL(5,2),
+
+    volatility DECIMAL(5,2)
 
 );
-
 
 CREATE TABLE user_investments (
 
@@ -27,7 +27,7 @@ CREATE TABLE user_investments (
 
     quantity DECIMAL(12,2) NOT NULL,
 
-    total_invested DECIMAL(12,2) NOT NULL,
+    bought_price DECIMAL(12,2) NOT NULL,
 
     purchase_date DATE NOT NULL,
 

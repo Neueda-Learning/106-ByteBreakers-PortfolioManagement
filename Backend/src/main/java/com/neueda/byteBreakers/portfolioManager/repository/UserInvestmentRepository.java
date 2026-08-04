@@ -1,22 +1,51 @@
 package com.neueda.byteBreakers.portfolioManager.repository;
 
+
+
+import com.neueda.byteBreakers.portfolioManager.entity.InvestmentOption;
 import com.neueda.byteBreakers.portfolioManager.entity.UserInvestment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-public class UserInvestmentRepository
-{
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
-    // Read all user investments
-    public List<UserInvestment> getAllUserInvestments() {
-        String sql = "SELECT * FROM user_investments";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(UserInvestment.class));
+@Repository
+public class UserInvestmentRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public UserInvestmentRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private static final RowMapper<UserInvestment> ROW_MAPPER = (rs, rowNum) -> {
+        InvestmentOption option = new InvestmentOption();
+        option.setId(rs.getLong("option_id"));
+        option.setName(rs.getString("name"));
+        option.setCategory(rs.getString("category"));
+        option.setCurrentPrice(rs.getBigDecimal("current_price"));
+        option.setTrend(rs.getString("trend"));
+        option.setEstimatedReturn(rs.getBigDecimal("estimated_return"));
+        option.setVolatility(rs.getBigDecimal("volatility"));
+
+        UserInvestment ui = new UserInvestment();
+        ui.setId(rs.getLong("investment_id"));
+        ui.setInvestmentOption(option);
+        ui.setQuantity(rs.getBigDecimal("quantity"));
+        ui.setBoughtPrice(rs.getBigDecimal("bought_price"));
+        ui.setPurchaseDate(rs.getDate("purchase_date").toLocalDate());
+        return ui;
+    };
+
+    public List<UserInvestment> findAllWithOption() {
+        String sql =
+                "SELECT ui.id AS investment_id, ui.quantity, ui.bought_price, ui.purchase_date, " +
+                "       io.id AS option_id, io.name, io.category, io.current_price, io.trend, " +
+                "       io.estimated_return, io.volatility " +
+                "FROM user_investments ui " +
+                "JOIN investment_options io ON io.id = ui.investment_option_id";
+        return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 }
