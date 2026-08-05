@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Button, Select, SimpleGrid, Text } from "@mantine/core";
+import { Select, Text } from "@mantine/core";
 
 import {
   type ColumnDef,
@@ -11,16 +12,18 @@ import {
 } from "@tanstack/react-table";
 
 import {
+  Button,
   DataTable,
   DataTablePagination,
   Toolbar,
   SearchBar,
   SectionCard,
-  StatCard,
   StatusBadge,
 } from "@/components/common";
 
 import { PageContainer } from "@/components/layout";
+import { getInvestmentDetailsPath } from "@/constants/routes";
+import { useInvestments } from "@/hooks/useInvestments";
 import { type MyInvestment, useMyInvestments } from "@/hooks/useMyInvestments";
 
 const formatCurrency = (value: number) => `₹${value.toLocaleString("en-IN")}`;
@@ -41,48 +44,71 @@ const trendColor = (trendValue: string) => {
   return "gray";
 };
 
+const investmentLookupKey = (name: string, category: string) =>
+  `${String(name || "").toLowerCase()}::${String(category || "").toLowerCase()}`;
+
 const Investments = () => {
+  const [category, setCategory] = useState<string | null>("All");
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<string | null>("Name");
+  const navigate = useNavigate();
   const { investments, loading } = useMyInvestments();
+  const { investments: investmentOptions } = useInvestments();
 
-  const portfolioValue = useMemo(
-    () =>
-      investments.reduce(
-        (total, investment) =>
-          total +
-          toNumber(investment.currentPrice) *
-            toNumber(investment.totalQuantityOwned),
-        0,
-      ),
+  const investmentIdByLookupKey = useMemo(() => {
+    const map = new Map<string, number>();
+
+    investmentOptions.forEach((option) => {
+      map.set(investmentLookupKey(option.name, option.category), option.id);
+    });
+
+    return map;
+  }, [investmentOptions]);
+
+  const categoryOptions = useMemo(
+    () => [
+      "All",
+      ...Array.from(
+        new Set(investments.map((investment) => investment.category)),
+      ).sort((left, right) => left.localeCompare(right)),
+    ],
     [investments],
   );
 
-  const quantityOwned = useMemo(
-    () =>
-      investments.reduce(
-        (total, investment) => total + toNumber(investment.totalQuantityOwned),
-        0,
-      ),
-    [investments],
-  );
+  const visibleData = useMemo(() => {
+    const normalizedSearch = search.toLowerCase();
 
-  const trendingUpCount = useMemo(
-    () =>
-      investments.filter((investment) =>
-        String(investment.trend || "")
-          .toLowerCase()
-          .includes("up"),
-      ).length,
-    [investments],
-  );
-
-  const filteredData = useMemo(() => {
-    return investments.filter((investment) =>
-      `${investment.name} ${investment.category}`
+    const filteredInvestments = investments.filter((investment) => {
+      const matchesSearch = `${investment.name} ${investment.category}`
         .toLowerCase()
-        .includes(search.toLowerCase()),
-    );
-  }, [investments, search]);
+        .includes(normalizedSearch);
+
+      const matchesCategory =
+        !category || category === "All" || investment.category === category;
+
+      return matchesSearch && matchesCategory;
+    });
+
+    return [...filteredInvestments].sort((left, right) => {
+      switch (sortBy) {
+        case "Current Value":
+          return (
+            toNumber(right.currentPrice) * toNumber(right.totalQuantityOwned) -
+            toNumber(left.currentPrice) * toNumber(left.totalQuantityOwned)
+          );
+        case "Current Price":
+          return toNumber(right.currentPrice) - toNumber(left.currentPrice);
+        case "Quantity":
+          return (
+            toNumber(right.totalQuantityOwned) -
+            toNumber(left.totalQuantityOwned)
+          );
+        case "Name":
+        default:
+          return left.name.localeCompare(right.name);
+      }
+    });
+  }, [category, investments, search, sortBy]);
 
   const columns = useMemo<ColumnDef<MyInvestment>[]>(
     () => [
@@ -134,18 +160,36 @@ const Investments = () => {
       {
         id: "actions",
         header: "",
-        cell: () => (
-          <Button variant="light" color="brand" size="xs">
-            View Details
-          </Button>
-        ),
+        cell: ({ row }) => {
+          const optionId = investmentIdByLookupKey.get(
+            investmentLookupKey(row.original.name, row.original.category),
+          );
+
+          return (
+            <Button
+              variant="light"
+              color="brand"
+              size="sm"
+              disabled={!optionId}
+              onClick={() => {
+                if (!optionId) {
+                  return;
+                }
+
+                navigate(getInvestmentDetailsPath(optionId));
+              }}
+            >
+              View Details
+            </Button>
+          );
+        },
       },
     ],
-    [],
+    [investmentIdByLookupKey, navigate],
   );
 
   const table = useReactTable({
-    data: filteredData,
+    data: visibleData,
     columns,
 
     getCoreRowModel: getCoreRowModel(),
@@ -161,29 +205,6 @@ const Investments = () => {
 
   return (
     <PageContainer title="My Investments">
-      <SimpleGrid cols={3} spacing="md" mb="lg">
-        <StatCard
-          title="Portfolio Value"
-          value={formatCurrency(portfolioValue)}
-        />
-
-        <StatCard
-          title="Holdings"
-          value={`${investments.length} Investments`}
-        />
-
-        <StatCard
-          title="Total Units"
-          value={quantityOwned.toLocaleString("en-IN")}
-        />
-
-        <StatCard
-          title="Trending Up"
-          value={`${trendingUpCount} Assets`}
-          trend="positive"
-        />
-      </SimpleGrid>
-
       <SectionCard
         title="My Investments"
         rightSection={
@@ -197,8 +218,10 @@ const Investments = () => {
                 />
 
                 <Select
+                  value={category}
+                  onChange={setCategory}
                   placeholder="Category"
-                  data={["All", "Equity", "Mutual Fund", "Crypto", "Bond"]}
+                  data={categoryOptions}
                   w={180}
                   variant="filled"
                   color="brand"
@@ -208,8 +231,10 @@ const Investments = () => {
             }
             rightSection={
               <Select
+                value={sortBy}
+                onChange={setSortBy}
                 placeholder="Sort"
-                data={["Name", "Profit/Loss", "Current Value"]}
+                data={["Name", "Current Value", "Current Price", "Quantity"]}
                 w={180}
                 variant="filled"
                 color="brand"
@@ -221,7 +246,7 @@ const Investments = () => {
       >
         {loading ? (
           <Text c="dimmed">Loading investments...</Text>
-        ) : filteredData.length === 0 ? (
+        ) : visibleData.length === 0 ? (
           <Text c="dimmed">No investments found.</Text>
         ) : (
           <>
