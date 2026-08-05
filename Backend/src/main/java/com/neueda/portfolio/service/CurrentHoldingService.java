@@ -22,7 +22,7 @@ public class CurrentHoldingService {
 
     public CurrentHolding create(CurrentHolding holding) {
 
-        return repository.save(holding);
+        return repository.add(holding);
     }
 
 

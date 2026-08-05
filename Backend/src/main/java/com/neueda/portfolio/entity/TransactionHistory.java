@@ -6,7 +6,7 @@ import java.time.LocalDate;
 public class TransactionHistory {
 
     private Long id;
-    private InvestmentOption investmentOption;
+    private Long investmentOptionId;
     private String action;
     private BigDecimal quantity;
     private BigDecimal boughtPrice;
@@ -14,10 +14,9 @@ public class TransactionHistory {
 
     public TransactionHistory() {}
 
-    public TransactionHistory(Long id, InvestmentOption investmentOption, String action, BigDecimal quantity,
+    public TransactionHistory( Long investmentOption, String action, BigDecimal quantity,
                            BigDecimal boughtPrice, LocalDate purchaseDate) {
-        this.id = id;
-        this.investmentOption = investmentOption;
+        this.investmentOptionId = investmentOption;
         this.action = action;
         this.quantity = quantity;
         this.boughtPrice = boughtPrice;
@@ -27,8 +26,8 @@ public class TransactionHistory {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public InvestmentOption getInvestmentOption() { return investmentOption; }
-    public void setInvestmentOption(InvestmentOption investmentOption) { this.investmentOption = investmentOption; }
+    public Long getInvestmentOptionId() { return investmentOptionId; }
+    public void setInvestmentOptionId(Long investmentOptionId) { this.investmentOptionId = investmentOptionId; }
 
     public BigDecimal getQuantity() { return quantity; }
     public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }

@@ -5,6 +5,7 @@ package com.neueda.portfolio.repository;
 import com.neueda.portfolio.entity.InvestmentOption;
 import com.neueda.portfolio.entity.TransactionHistory;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -21,24 +22,25 @@ public class TransactionHistoryRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static final RowMapper<TransactionHistory> ROW_MAPPER = (rs, rowNum) -> {
-        InvestmentOption option = new InvestmentOption();
-        option.setId(rs.getLong("option_id"));
-        option.setName(rs.getString("name"));
-        option.setCategory(rs.getString("category"));
-        option.setCurrentPrice(rs.getBigDecimal("current_price"));
-        option.setTrend(rs.getString("trend"));
-        option.setEstimatedReturn(rs.getBigDecimal("estimated_return"));
-        option.setVolatility(rs.getBigDecimal("volatility"));
-
-        TransactionHistory ui = new TransactionHistory();
-        ui.setId(rs.getLong("investment_id"));
-        ui.setInvestmentOption(option);
-        ui.setQuantity(rs.getBigDecimal("quantity"));
-        ui.setBoughtPrice(rs.getBigDecimal("bought_price"));
-        ui.setPurchaseDate(rs.getDate("purchase_date").toLocalDate());
-        return ui;
-    };
+//    private static final RowMapper<TransactionHistory> ROW_MAPPER = (rs, rowNum) -> {
+//        InvestmentOption option = new InvestmentOption();
+//        option.setId(rs.getLong("option_id"));
+//        option.setName(rs.getString("name"));
+//        option.setCategory(rs.getString("category"));
+//        option.setCurrentPrice(rs.getBigDecimal("current_price"));
+//        option.setTrend(rs.getString("trend"));
+//        option.setEstimatedReturn(rs.getBigDecimal("estimated_return"));
+//        option.setVolatility(rs.getBigDecimal("volatility"));
+//
+//        TransactionHistory ui = new TransactionHistory();
+//        ui.setId(rs.getLong("investment_id"));
+////        ui.setInvestmentOption(option);
+//        ui.setInvestmentOption(optionId);
+//        ui.setQuantity(rs.getBigDecimal("quantity"));
+//        ui.setBoughtPrice(rs.getBigDecimal("bought_price"));
+//        ui.setPurchaseDate(rs.getDate("purchase_date").toLocalDate());
+//        return ui;
+//    };
 
     public List<TransactionHistory> findAllWithOption() {
         String sql =
@@ -47,14 +49,14 @@ public class TransactionHistoryRepository {
                 "       io.estimated_return, io.volatility " +
                 "FROM user_investments ui " +
                 "JOIN investment_options io ON io.id = ui.investment_option_id";
-        return jdbcTemplate.query(sql, ROW_MAPPER);
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(TransactionHistory.class));
     }
 
     public int createTransactionHistory(TransactionHistory transactionHistory) {
         String sql = "INSERT INTO user_investments (investment_option_id, quantity, bought_price, purchase_date) VALUES (?, ?, ?, ?)";
         return jdbcTemplate.update(
                 sql,
-                transactionHistory.getInvestmentOption().getId(),
+                transactionHistory.getInvestmentOptionId(),
                 transactionHistory.getQuantity(),
                 transactionHistory.getBoughtPrice(),
                 transactionHistory.getPurchaseDate()
@@ -71,7 +73,7 @@ public class TransactionHistoryRepository {
                 "WHERE ui.id = ?";
 
         try {
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(TransactionHistory.class), id);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
@@ -81,7 +83,7 @@ public class TransactionHistoryRepository {
         String sql = "UPDATE user_investments SET investment_option_id = ?, quantity = ?, bought_price = ?, purchase_date = ? WHERE id = ?";
         return jdbcTemplate.update(
                 sql,
-                transactionHistory.getInvestmentOption().getId(),
+                transactionHistory.getInvestmentOptionId(),
                 transactionHistory.getQuantity(),
                 transactionHistory.getBoughtPrice(),
                 transactionHistory.getPurchaseDate(),

@@ -38,7 +38,7 @@ public class CurrentHoldingRepository {
     };
 
 
-    public CurrentHolding save(CurrentHolding holding) {
+    public CurrentHolding add(CurrentHolding holding) {
 
         String sql = """
                 INSERT INTO current_holdings
