@@ -1,4 +1,5 @@
 import {
+  IconBulb,
   IconChartLine,
   IconLayoutDashboard,
   IconSearch,
@@ -22,6 +23,11 @@ export const NAVIGATION_ITEMS = [
     label: "Investment Explorer",
     icon: IconSearch,
     path: ROUTES.INVESTMENTOPTIONS,
+  },
+  {
+    label: "Diversify Recommendations",
+    icon: IconBulb,
+    path: ROUTES.DIVERSIFYRECOMMENDATIONS,
   },
   {
     label: "Market Simulation",
