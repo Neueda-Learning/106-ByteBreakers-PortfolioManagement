@@ -1,6 +1,7 @@
 package com.neueda.portfolio.repository;
 
 import com.neueda.portfolio.dto.HoldingDetailsDTO;
+import com.neueda.portfolio.dto.InvestmentDetailDTO;
 import com.neueda.portfolio.entity.CurrentHolding;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -165,6 +166,31 @@ public class CurrentHoldingRepository {
         return jdbcTemplate.queryForObject(
                 sql,
                 new BeanPropertyRowMapper<>(HoldingDetailsDTO.class),
+                id
+        );
+    }
+
+    public InvestmentDetailDTO getInvestmentDetails(Long id)
+    {
+        String sql = """
+            SELECT
+                io.id,
+                io.name,
+                io.category,
+                io.current_price AS currentPrice,
+                io.trend,
+                io.estimated_return AS estimatedReturn,
+                ch.total_quantity_owned AS quantityOwned,
+                ch.total_invested AS totalInvested,
+                (io.current_price * ch.total_quantity_owned - ch.total_invested) AS currentProfitLoss
+            FROM current_holdings ch
+            JOIN investment_options io ON ch.option_id = io.id
+            WHERE io.id = ?
+            """;
+
+        return jdbcTemplate.queryForObject(
+                sql,
+                new BeanPropertyRowMapper<>(InvestmentDetailDTO.class),
                 id
         );
     }

@@ -1,6 +1,7 @@
 package com.neueda.portfolio.controller;
 
 import com.neueda.portfolio.dto.HoldingDetailsDTO;
+import com.neueda.portfolio.dto.InvestmentDetailDTO;
 import com.neueda.portfolio.entity.InvestmentOption;
 import com.neueda.portfolio.service.CurrentHoldingService;
 import com.neueda.portfolio.service.InvestmentOptionService;
@@ -38,8 +39,8 @@ public class InvestmentOptionController {
     }
 
     @GetMapping("/{id}/holdings")
-    public ResponseEntity<HoldingDetailsDTO> getHoldingDetails(@PathVariable Long id){
-        return ResponseEntity.ok(currentHoldingService.getHoldingDetails(id));
+    public ResponseEntity<InvestmentDetailDTO> getHoldingDetails(@PathVariable Long id){
+        return ResponseEntity.ok(currentHoldingService.getInvestmentDetails(id));
     }
 
 

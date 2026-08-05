@@ -1,6 +1,7 @@
 package com.neueda.portfolio.service;
 
 import com.neueda.portfolio.dto.HoldingDetailsDTO;
+import com.neueda.portfolio.dto.InvestmentDetailDTO;
 import com.neueda.portfolio.entity.CurrentHolding;
 import com.neueda.portfolio.repository.CurrentHoldingRepository;
 import org.springframework.stereotype.Service;
@@ -92,5 +93,9 @@ public class CurrentHoldingService {
 
     public HoldingDetailsDTO getHoldingDetails(Long id){
         return repository.getHoldingDetails(id);
+    }
+
+    public InvestmentDetailDTO getInvestmentDetails(Long id){
+        return repository.getInvestmentDetails(id);
     }
 }
