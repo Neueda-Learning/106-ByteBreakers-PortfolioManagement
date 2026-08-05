@@ -1,0 +1,68 @@
+package com.neueda.portfolio.controller;
+
+import com.neueda.portfolio.entity.InvestmentOption;
+import com.neueda.portfolio.service.InvestmentOptionService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/investment-options")
+public class InvestmentOptionController {
+
+    @Autowired
+    private InvestmentOptionService investmentOptionService;
+
+    @GetMapping("/")
+    public ResponseEntity<List<InvestmentOption>> getAllInvestmentOptions() {
+        return ResponseEntity.ok(investmentOptionService.getAllInvestmentOptions());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InvestmentOption> getInvestmentOptionById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(investmentOptionService.getInvestmentOptionById(id));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<Void> createInvestmentOption(@Valid @RequestBody InvestmentOption investmentOption) {
+        investmentOptionService.createInvestmentOption(investmentOption);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateInvestmentOption(@PathVariable Long id,
+                                                        @Valid @RequestBody InvestmentOption investmentOption) {
+        try {
+            investmentOptionService.updateInvestmentOption(id, investmentOption);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteInvestmentOption(@PathVariable Long id) {
+        try {
+            investmentOptionService.deleteInvestmentOption(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+}
+
