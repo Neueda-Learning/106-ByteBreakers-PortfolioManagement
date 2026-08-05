@@ -1,12 +1,12 @@
- package com.neueda.portfolio.diversify.dto;
+package com.neueda.portfolio.diversify.dto;
 
 public class SuggestionDTO {
 
     private Long optionId;
     private String name;
     private String category;
-    private double score;       // final blended score, 0-1 range
-    private String reason;      // human-readable explanation for the UI
+    private double score;
+    private String reason;
 
     public SuggestionDTO(Long optionId, String name, String category, double score, String reason) {
         this.optionId = optionId;
