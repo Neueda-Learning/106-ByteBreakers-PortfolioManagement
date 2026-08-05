@@ -22,34 +22,22 @@ public class TransactionHistoryRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-//    private static final RowMapper<TransactionHistory> ROW_MAPPER = (rs, rowNum) -> {
-//        InvestmentOption option = new InvestmentOption();
-//        option.setId(rs.getLong("option_id"));
-//        option.setName(rs.getString("name"));
-//        option.setCategory(rs.getString("category"));
-//        option.setCurrentPrice(rs.getBigDecimal("current_price"));
-//        option.setTrend(rs.getString("trend"));
-//        option.setEstimatedReturn(rs.getBigDecimal("estimated_return"));
-//        option.setVolatility(rs.getBigDecimal("volatility"));
-//
-//        TransactionHistory ui = new TransactionHistory();
-//        ui.setId(rs.getLong("investment_id"));
-////        ui.setInvestmentOption(option);
-//        ui.setInvestmentOption(optionId);
-//        ui.setQuantity(rs.getBigDecimal("quantity"));
-//        ui.setBoughtPrice(rs.getBigDecimal("bought_price"));
-//        ui.setPurchaseDate(rs.getDate("purchase_date").toLocalDate());
-//        return ui;
-//    };
+    public List<TransactionHistory> findAll() {
+        String sql = """
+            SELECT
+                id,
+                investment_option_id AS investmentOptionId,
+                action,
+                quantity,
+                bought_price AS boughtPrice,
+                transaction_date AS purchaseDate
+            FROM transaction_history
+            """;
 
-    public List<TransactionHistory> findAllWithOption() {
-        String sql =
-                "SELECT ui.id AS investment_id, ui.quantity, ui.bought_price, ui.purchase_date, " +
-                "       io.id AS option_id, io.name, io.category, io.current_price, io.trend, " +
-                "       io.estimated_return, io.volatility " +
-                "FROM user_investments ui " +
-                "JOIN investment_options io ON io.id = ui.investment_option_id";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(TransactionHistory.class));
+        return jdbcTemplate.query(
+                sql,
+                new BeanPropertyRowMapper<>(TransactionHistory.class)
+        );
     }
 
     public int createTransactionHistory(TransactionHistory transactionHistory) {
@@ -65,26 +53,45 @@ public class TransactionHistoryRepository {
     }
 
     public TransactionHistory getTransactionHistoryById(Long id) {
-        String sql =
-                "SELECT ui.id AS investment_id, ui.quantity, ui.bought_price, ui.purchase_date, " +
-                "       io.id AS option_id, io.name, io.category, io.current_price, io.trend, " +
-                "       io.estimated_return, io.volatility " +
-                "FROM user_investments ui " +
-                "JOIN investment_options io ON io.id = ui.investment_option_id " +
-                "WHERE ui.id = ?";
+
+        String sql = """
+            SELECT
+                id,
+                investment_option_id AS investmentOptionId,
+                action,
+                quantity,
+                bought_price AS boughtPrice,
+                transaction_date AS purchaseDate
+            FROM transaction_history
+            WHERE id = ?
+            """;
 
         try {
-            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(TransactionHistory.class), id);
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    new BeanPropertyRowMapper<>(TransactionHistory.class),
+                    id
+            );
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
     }
 
     public int updateTransactionHistory(Long id, TransactionHistory transactionHistory) {
-        String sql = "UPDATE user_investments SET investment_option_id = ?, quantity = ?, bought_price = ?, purchase_date = ? WHERE id = ?";
+        String sql = """
+            UPDATE transaction_history
+            SET investment_option_id = ?,
+                action = ?,
+                quantity = ?,
+                bought_price = ?,
+                transaction_date = ?
+            WHERE id = ?
+            """;
+
         return jdbcTemplate.update(
                 sql,
                 transactionHistory.getInvestmentOptionId(),
+                transactionHistory.getAction(),
                 transactionHistory.getQuantity(),
                 transactionHistory.getBoughtPrice(),
                 transactionHistory.getPurchaseDate(),
@@ -93,7 +100,11 @@ public class TransactionHistoryRepository {
     }
 
     public int deleteTransactionHistory(Long id) {
-        String sql = "DELETE FROM user_investments WHERE id = ?";
+        String sql = """
+            DELETE FROM transaction_history
+            WHERE id = ?
+            """;
+
         return jdbcTemplate.update(sql, id);
     }
 }

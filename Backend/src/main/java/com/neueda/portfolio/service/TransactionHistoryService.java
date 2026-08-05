@@ -15,7 +15,7 @@ public class TransactionHistoryService
     private TransactionHistoryRepository transactionHistoryRepository;
 
     public List<TransactionHistory> getAllTransactionHistorys() {
-        return transactionHistoryRepository.findAllWithOption();
+        return transactionHistoryRepository.findAll();
     }
 
     public int createTransactionHistory(TransactionHistory transactionHistory) {

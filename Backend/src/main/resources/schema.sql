@@ -36,7 +36,7 @@ CREATE TABLE transaction_history (
 
     bought_price DECIMAL(12,2) NOT NULL,
 
-     transaction_date DATE NOT NULL,
+    transaction_date DATE NOT NULL,
 
     CONSTRAINT fk_transaction_investment_option
         FOREIGN KEY (investment_option_id)
