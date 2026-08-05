@@ -1,4 +1,5 @@
 package com.neueda.portfolio.repository;
+import com.neueda.portfolio.dto.MyInvestmentsDTO;
 import com.neueda.portfolio.entity.InvestmentOption;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,6 +43,19 @@ public class InvestmentOptionRepository {
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
+    }
+
+    public List<MyInvestmentsDTO> findAllMyInvestments() {
+        String sql = "SELECT io.name, io.category, io.current_price, ch.total_quantity_owned, io.trend " +
+                     "FROM investment_options io " +
+                     "JOIN current_holdings ch ON io.id = ch.option_id";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new MyInvestmentsDTO(
+                rs.getString("name"),
+                rs.getString("category"),
+                rs.getBigDecimal("current_price"),
+                rs.getBigDecimal("total_quantity_owned"),
+                rs.getString("trend")
+        ));
     }
 
     public int createInvestmentOption(InvestmentOption investmentOption) {
