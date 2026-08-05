@@ -1,6 +1,4 @@
 package com.neueda.portfolio.diversify.controller;
-
-;
 import com.neueda.portfolio.diversify.dto.SuggestionDTO;
 import com.neueda.portfolio.diversify.service.DiversificationService;
 import org.springframework.beans.factory.annotation.Autowired;
