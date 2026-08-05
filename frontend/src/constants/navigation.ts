@@ -21,7 +21,7 @@ export const NAVIGATION_ITEMS = [
   {
     label: "Investment Explorer",
     icon: IconSearch,
-    path: ROUTES.EXPLORER,
+    path: ROUTES.INVESTMENTOPTIONS,
   },
   {
     label: "Market Simulation",
