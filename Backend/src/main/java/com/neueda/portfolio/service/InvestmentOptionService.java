@@ -1,5 +1,6 @@
 package com.neueda.portfolio.service;
 
+import com.neueda.portfolio.dto.MyInvestmentsDTO;
 import com.neueda.portfolio.entity.InvestmentOption;
 import com.neueda.portfolio.repository.InvestmentOptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,10 @@ public class InvestmentOptionService {
             throw new RuntimeException("Investment option not found with id: " + id);
         }
         return investmentOption;
+    }
+
+    public List<MyInvestmentsDTO> getAllMyInvestments() {
+        return investmentOptionRepository.findAllMyInvestments();
     }
 
     public int createInvestmentOption(InvestmentOption investmentOption) {
