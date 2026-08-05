@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Group, Select, Stack, Text, Title } from "@mantine/core";
 
@@ -21,6 +22,7 @@ import {
   TradeQuantityModal,
   Toolbar,
 } from "@/components/common";
+import { getInvestmentDetailsPath } from "@/constants/routes";
 import { useInvestments } from "@/hooks/useInvestments";
 import { useTradeAction } from "@/hooks/useTradeAction";
 
@@ -36,6 +38,7 @@ interface InvestmentOption {
 const formatCurrency = (value: number) => `₹${value.toLocaleString("en-IN")}`;
 
 const InvestmentOptions = () => {
+  const navigate = useNavigate();
   const [category, setCategory] = useState<string | null>("All");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<string | null>("Name");
@@ -49,20 +52,24 @@ const InvestmentOptions = () => {
       return;
     }
 
+    const investmentToBuy = selectedInvestment;
+
     try {
       await executeTrade({
-        optionId: selectedInvestment.id,
+        optionId: investmentToBuy.id,
         quantity,
-        currentPrice: selectedInvestment.currentPrice,
+        currentPrice: investmentToBuy.currentPrice,
         action: "buy",
       });
 
       showToast({
         title: "Buy order submitted",
-        message: `Bought ${quantity} of ${selectedInvestment.name}.`,
+        message: `Bought ${quantity} of ${investmentToBuy.name}.`,
         tone: "success",
       });
+
       setSelectedInvestment(null);
+      navigate(getInvestmentDetailsPath(investmentToBuy.id));
     } catch {
       showToast({
         title: "Unable to place order",
