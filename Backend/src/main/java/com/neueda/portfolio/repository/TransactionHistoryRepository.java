@@ -3,7 +3,7 @@ package com.neueda.portfolio.repository;
 
 
 import com.neueda.portfolio.entity.InvestmentOption;
-import com.neueda.portfolio.entity.UserInvestment;
+import com.neueda.portfolio.entity.TransactionHistory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,15 +13,15 @@ import java.util.List;
 
 
 @Repository
-public class UserInvestmentRepository {
+public class TransactionHistoryRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public UserInvestmentRepository(JdbcTemplate jdbcTemplate) {
+    public TransactionHistoryRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private static final RowMapper<UserInvestment> ROW_MAPPER = (rs, rowNum) -> {
+    private static final RowMapper<TransactionHistory> ROW_MAPPER = (rs, rowNum) -> {
         InvestmentOption option = new InvestmentOption();
         option.setId(rs.getLong("option_id"));
         option.setName(rs.getString("name"));
@@ -31,7 +31,7 @@ public class UserInvestmentRepository {
         option.setEstimatedReturn(rs.getBigDecimal("estimated_return"));
         option.setVolatility(rs.getBigDecimal("volatility"));
 
-        UserInvestment ui = new UserInvestment();
+        TransactionHistory ui = new TransactionHistory();
         ui.setId(rs.getLong("investment_id"));
         ui.setInvestmentOption(option);
         ui.setQuantity(rs.getBigDecimal("quantity"));
@@ -40,7 +40,7 @@ public class UserInvestmentRepository {
         return ui;
     };
 
-    public List<UserInvestment> findAllWithOption() {
+    public List<TransactionHistory> findAllWithOption() {
         String sql =
                 "SELECT ui.id AS investment_id, ui.quantity, ui.bought_price, ui.purchase_date, " +
                 "       io.id AS option_id, io.name, io.category, io.current_price, io.trend, " +
@@ -50,18 +50,18 @@ public class UserInvestmentRepository {
         return jdbcTemplate.query(sql, ROW_MAPPER);
     }
 
-    public int createUserInvestment(UserInvestment userInvestment) {
+    public int createTransactionHistory(TransactionHistory transactionHistory) {
         String sql = "INSERT INTO user_investments (investment_option_id, quantity, bought_price, purchase_date) VALUES (?, ?, ?, ?)";
         return jdbcTemplate.update(
                 sql,
-                userInvestment.getInvestmentOption().getId(),
-                userInvestment.getQuantity(),
-                userInvestment.getBoughtPrice(),
-                userInvestment.getPurchaseDate()
+                transactionHistory.getInvestmentOption().getId(),
+                transactionHistory.getQuantity(),
+                transactionHistory.getBoughtPrice(),
+                transactionHistory.getPurchaseDate()
         );
     }
 
-    public UserInvestment getUserInvestmentById(Long id) {
+    public TransactionHistory getTransactionHistoryById(Long id) {
         String sql =
                 "SELECT ui.id AS investment_id, ui.quantity, ui.bought_price, ui.purchase_date, " +
                 "       io.id AS option_id, io.name, io.category, io.current_price, io.trend, " +
@@ -77,19 +77,19 @@ public class UserInvestmentRepository {
         }
     }
 
-    public int updateUserInvestment(Long id, UserInvestment userInvestment) {
+    public int updateTransactionHistory(Long id, TransactionHistory transactionHistory) {
         String sql = "UPDATE user_investments SET investment_option_id = ?, quantity = ?, bought_price = ?, purchase_date = ? WHERE id = ?";
         return jdbcTemplate.update(
                 sql,
-                userInvestment.getInvestmentOption().getId(),
-                userInvestment.getQuantity(),
-                userInvestment.getBoughtPrice(),
-                userInvestment.getPurchaseDate(),
+                transactionHistory.getInvestmentOption().getId(),
+                transactionHistory.getQuantity(),
+                transactionHistory.getBoughtPrice(),
+                transactionHistory.getPurchaseDate(),
                 id
         );
     }
 
-    public int deleteUserInvestment(Long id) {
+    public int deleteTransactionHistory(Long id) {
         String sql = "DELETE FROM user_investments WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
