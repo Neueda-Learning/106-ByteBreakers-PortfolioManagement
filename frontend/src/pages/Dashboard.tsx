@@ -2,8 +2,6 @@ import { useMemo } from "react";
 
 import { ActionIcon, Group, SimpleGrid, Text, Tooltip } from "@mantine/core";
 
-import { IconDiamond } from "@tabler/icons-react";
-
 import {
   ArcElement,
   Chart as ChartJS,

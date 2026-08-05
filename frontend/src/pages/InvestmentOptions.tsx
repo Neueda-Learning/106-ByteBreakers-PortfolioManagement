@@ -1,19 +1,6 @@
 import { useMemo, useState } from "react";
 
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Text,
-  Tooltip,
-  Stack,
-  Title,
-} from "@mantine/core";
-
-import {
-  IconAdjustmentsHorizontal,
-  IconDiamond,
-} from "@tabler/icons-react";
+import { Group, Select, Stack, Text, Title } from "@mantine/core";
 
 import {
   type ColumnDef,
@@ -24,11 +11,13 @@ import {
 } from "@tanstack/react-table";
 
 import {
+  Button,
   DataTable,
   DataTablePagination,
   SearchBar,
   SectionCard,
   StatusBadge,
+  Toolbar,
 } from "@/components/common";
 import { useInvestments } from "@/hooks/useInvestments";
 
@@ -41,20 +30,50 @@ interface InvestmentOption {
   estimatedReturn: number;
 }
 
-const formatCurrency = (value: number) =>
-  `₹${value.toLocaleString("en-IN")}`;
+const formatCurrency = (value: number) => `₹${value.toLocaleString("en-IN")}`;
 
 const InvestmentOptions = () => {
+  const [category, setCategory] = useState<string | null>("All");
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<string | null>("Name");
   const { investments, loading } = useInvestments();
 
-  const filteredData = useMemo(() => {
-    return investments.filter((investment) =>
-      `${investment.name} ${investment.category}`
+  const categoryOptions = useMemo(() => {
+    const categories = Array.from(
+      new Set(investments.map((investment) => investment.category)),
+    ).sort((left, right) => left.localeCompare(right));
+
+    return ["All", ...categories];
+  }, [investments]);
+
+  const visibleData = useMemo(() => {
+    const normalizedSearch = search.toLowerCase();
+
+    const filteredInvestments = investments.filter((investment) => {
+      const matchesSearch = `${investment.name} ${investment.category}`
         .toLowerCase()
-        .includes(search.toLowerCase())
-    );
-  }, [investments, search]);
+        .includes(normalizedSearch);
+
+      const matchesCategory =
+        !category || category === "All" || investment.category === category;
+
+      return matchesSearch && matchesCategory;
+    });
+
+    return [...filteredInvestments].sort((left, right) => {
+      switch (sortBy) {
+        case "Current Price":
+          return right.currentPrice - left.currentPrice;
+        case "Est. Return":
+          return right.estimatedReturn - left.estimatedReturn;
+        case "Category":
+          return left.category.localeCompare(right.category);
+        case "Name":
+        default:
+          return left.name.localeCompare(right.name);
+      }
+    });
+  }, [category, investments, search, sortBy]);
 
   const columns = useMemo<ColumnDef<InvestmentOption>[]>(
     () => [
@@ -66,16 +85,13 @@ const InvestmentOptions = () => {
         accessorKey: "category",
         header: "Category",
         cell: ({ row }) => (
-          <StatusBadge color="blue">
-            {row.original.category}
-          </StatusBadge>
+          <StatusBadge color="blue">{row.original.category}</StatusBadge>
         ),
       },
       {
         accessorKey: "currentPrice",
         header: "Current Price",
-        cell: ({ row }) =>
-          formatCurrency(row.original.currentPrice),
+        cell: ({ row }) => formatCurrency(row.original.currentPrice),
       },
       {
         accessorKey: "trend",
@@ -112,20 +128,30 @@ const InvestmentOptions = () => {
         id: "buy",
         header: "Actions",
         cell: () => (
-          <Button
-            size="xs"
-            variant="filled"
-          >
-            Buy
-          </Button>
+          <Group gap="xs" wrap="nowrap">
+            {/* <Button
+              size="sm"
+              variant="light"
+              leftSection={<IconEye size={14} />}
+              onClick={() =>
+                navigate(getInvestmentDetailsPath(row.original.id))
+              }
+            >
+              View Details
+            </Button> */}
+
+            <Button size="sm" variant="filled">
+              Buy
+            </Button>
+          </Group>
         ),
       },
     ],
-    []
+    [],
   );
 
   const table = useReactTable({
-    data: filteredData,
+    data: visibleData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -150,37 +176,45 @@ const InvestmentOptions = () => {
       <SectionCard
         title="Investment Options"
         rightSection={
-          <Group>
-            <SearchBar
-              value={search}
-              onChange={setSearch}
-              placeholder="Search investments..."
-            />
+          <Toolbar
+            leftSection={
+              <>
+                <SearchBar
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search investments..."
+                />
 
-            <Tooltip label="Filter by category">
-              <ActionIcon
-                variant="light"
-                size="lg"
-              >
-                <IconAdjustmentsHorizontal size={18} />
-              </ActionIcon>
-            </Tooltip>
-
-            <Tooltip label="Diversification Tool">
-              <ActionIcon
-                variant="light"
-                color="violet"
-                size="lg"
-              >
-                <IconDiamond size={18} />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
+                <Select
+                  value={category}
+                  onChange={setCategory}
+                  placeholder="Category"
+                  data={categoryOptions}
+                  w={180}
+                  variant="filled"
+                  color="brand"
+                  radius="md"
+                />
+              </>
+            }
+            rightSection={
+              <Select
+                value={sortBy}
+                onChange={setSortBy}
+                placeholder="Sort"
+                data={["Name", "Current Price", "Est. Return", "Category"]}
+                w={180}
+                variant="filled"
+                color="brand"
+                radius="md"
+              />
+            }
+          />
         }
       >
         {loading ? (
           <Text c="dimmed">Loading investment options...</Text>
-        ) : filteredData.length === 0 ? (
+        ) : visibleData.length === 0 ? (
           <Text c="dimmed">No investments found.</Text>
         ) : (
           <>
