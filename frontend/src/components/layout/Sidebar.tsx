@@ -7,15 +7,15 @@ const Sidebar = () => {
   return (
     <AppShell.Navbar
       p="md"
-      sx={(theme) => ({
-        backgroundColor: theme.colors.brand[1],
-        borderRight: `1px solid ${theme.colors.brand[2]}`,
-      })}
+      style={{
+        // backgroundColor: "var(--mantine-color-brand-1)",
+        borderRight: "1px solid var(--mantine-color-brand-2)",
+      }}
     >
       <Title
         order={3}
         mb="xl"
-        sx={(theme) => ({ color: theme.colors.brand[9] })}
+        // c="brand.9"
       >
         Portfolio Manager
       </Title>
