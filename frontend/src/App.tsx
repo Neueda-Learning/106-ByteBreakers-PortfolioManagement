@@ -1,8 +1,13 @@
-import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter,
+} from "react-router-dom";
 
 import Layout from "@/components/layout/Layout";
 
 import Dashboard from "@/pages/Dashboard";
+import DiversifyRecommendations from "@/pages/DiversifyRecommendations";
 import InvestmentOptions from "@/pages/InvestmentOptions";
 import MyInvestments from "@/pages/MyInvestments";
 import InvestmentDetails from "./pages/InvestmentDetails";
@@ -26,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.MYINVESTMENTS,
         element: <MyInvestments />,
+      },
+      {
+        path: ROUTES.DIVERSIFYRECOMMENDATIONS,
+        element: <DiversifyRecommendations />,
       },
       {
         path: ROUTES.INVESTMENTDETAILS,
