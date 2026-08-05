@@ -1,17 +1,17 @@
 package com.neueda.portfolio.controller;
 
 import com.neueda.portfolio.dto.BuySellDTO;
+import com.neueda.portfolio.dto.MyInvestmentsDTO;
 import com.neueda.portfolio.entity.CurrentHolding;
 import com.neueda.portfolio.entity.TransactionHistory;
 import com.neueda.portfolio.service.CurrentHoldingService;
+import com.neueda.portfolio.service.InvestmentOptionService;
 import com.neueda.portfolio.service.TransactionHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -22,6 +22,9 @@ public class APIendpointController
 
     @Autowired
     private CurrentHoldingService currentHoldingService;
+
+    @Autowired
+    private InvestmentOptionService investmentOptionService;
 
     @PutMapping("/buy")
     public void buy(@RequestBody BuySellDTO req) {
@@ -54,6 +57,11 @@ public class APIendpointController
         } else {
             throw new RuntimeException("No holdings to sell for this option");
         }
+    }
+
+    @GetMapping("/investment")
+    public List<MyInvestmentsDTO> getMyInvestments() {
+        return investmentOptionService.getAllMyInvestments();
     }
 
 }
