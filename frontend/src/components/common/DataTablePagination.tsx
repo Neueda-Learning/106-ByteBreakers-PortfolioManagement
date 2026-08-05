@@ -29,6 +29,8 @@ const DataTablePagination = <T,>({
                 onChange={(page) =>
                     table.setPageIndex(page - 1)
                 }
+                color="brand"
+                radius="md"
             />
         </Group>
     );

@@ -4,7 +4,7 @@ import Layout from "@/components/layout/Layout";
 
 import Dashboard from "@/pages/Dashboard";
 import InvestmentOptions from "@/pages/InvestmentOptions";
-// import InvestmentExplorer from "@/pages/InvestmentExplorer";
+import MyInvestments from "@/pages/MyInvestments";
 // import MarketSimulation from "@/pages/MarketSimulation";
 
 import { ROUTES } from "@/constants/routes";
@@ -22,14 +22,10 @@ const router = createBrowserRouter([
         path: ROUTES.INVESTMENTOPTIONS,
         element: <InvestmentOptions />,
       },
-      // {
-      //   path: ROUTES.EXPLORER,
-      //   element: <InvestmentExplorer />,
-      // },
-      // {
-      //   path: ROUTES.SIMULATION,
-      //   element: <MarketSimulation />,
-      // },
+      {
+        path: ROUTES.MYINVESTMENTS,
+        element: <MyInvestments />,
+      },
       {
         path: "*",
         element: <Navigate to="/" replace />,

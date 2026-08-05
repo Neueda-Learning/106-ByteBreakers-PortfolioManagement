@@ -16,10 +16,14 @@ const SectionCard = ({
 }: SectionCardProps) => {
     return (
         <Card
-            shadow="sm"
+            shadow="md"
             radius="lg"
             withBorder
             p="lg"
+            sx={(theme) => ({
+                backgroundColor: theme.colors.brand[0],
+                borderColor: theme.colors.brand[2],
+            })}
         >
             {(title || rightSection) && (
                 <Group

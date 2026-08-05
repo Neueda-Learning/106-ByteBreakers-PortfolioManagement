@@ -16,7 +16,7 @@ export const NAVIGATION_ITEMS = [
   {
     label: "My Investments",
     icon: IconWallet,
-    path: ROUTES.INVESTMENTOPTIONS,
+    path: ROUTES.MYINVESTMENTS,
   },
   {
     label: "Investment Explorer",

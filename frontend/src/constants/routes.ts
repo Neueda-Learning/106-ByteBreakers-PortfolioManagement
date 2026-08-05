@@ -1,6 +1,7 @@
 export const ROUTES = {
   DASHBOARD: "/",
-  INVESTMENTOPTIONS: "/investment-options",
+  INVESTMENTOPTIONS: "/investment_options",
+  MYINVESTMENTS: "/my_investments",
   EXPLORER: "/explorer",
-  SIMULATION: "/simulation",
+  SIMULATION: "/simulation" 
 } as const;
