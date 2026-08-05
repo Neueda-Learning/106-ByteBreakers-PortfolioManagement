@@ -199,13 +199,13 @@ const Dashboard = () => {
 
         <SectionCard
           title="Allocation by Category"
-          rightSection={
-            <Tooltip label="Diversification Tool">
-              <ActionIcon variant="light" color="pink" size="lg">
-                <IconDiamond size={18} />
-              </ActionIcon>
-            </Tooltip>
-          }
+          //   rightSection={
+          //     <Tooltip label="Diversification Tool">
+          //       <ActionIcon variant="light" color="pink" size="lg">
+          //         <IconDiamond size={18} />
+          //       </ActionIcon>
+          //     </Tooltip>
+          //   }
         >
           {loading ? (
             <Text c="dimmed">Loading chart...</Text>
@@ -213,14 +213,47 @@ const Dashboard = () => {
             <Text c="dimmed">No allocation data found.</Text>
           ) : (
             <Group justify="center" py="sm">
-              <div style={{ width: "100%", maxWidth: 340 }}>
+              <div style={{ width: "100%", height: 340 }}>
                 <Pie
                   data={chartData}
                   options={{
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                       legend: {
-                        position: "bottom",
+                        position: "right",
+                        labels: {
+                          font: {
+                            size: 14,
+                          },
+                          padding: 16,
+                          generateLabels: (chart) => {
+                            const data = chart.data;
+                            const dataset = data.datasets[0];
+                            const total = (dataset.data as number[]).reduce(
+                              (sum, val) => sum + (val as number),
+                              0,
+                            );
+                            return (data.labels as string[]).map((label, i) => {
+                              const value = dataset.data[i] as number;
+                              const pct =
+                                total > 0
+                                  ? ((value / total) * 100).toFixed(1)
+                                  : "0.0";
+                              return {
+                                text: `${label}  ${pct}%`,
+                                fillStyle: (
+                                  dataset.backgroundColor as string[]
+                                )[i],
+                                strokeStyle: dataset.borderColor as string,
+                                lineWidth: dataset.borderWidth as number,
+                                hidden: false,
+                                index: i,
+                              };
+                            });
+                          },
+                        },
+                        fullSize: true,
                       },
                     },
                   }}
