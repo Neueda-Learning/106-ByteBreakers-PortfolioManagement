@@ -1,5 +1,6 @@
 package com.neueda.portfolio.service;
 
+import com.neueda.portfolio.dto.HoldingDetailsDTO;
 import com.neueda.portfolio.entity.CurrentHolding;
 import com.neueda.portfolio.repository.CurrentHoldingRepository;
 import org.springframework.stereotype.Service;
@@ -87,5 +88,9 @@ public class CurrentHoldingService {
     public void delete(Long id) {
 
         repository.deleteById(id);
+    }
+
+    public HoldingDetailsDTO getHoldingDetails(Long id){
+        return repository.getHoldingDetails(id);
     }
 }

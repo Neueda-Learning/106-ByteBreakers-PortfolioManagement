@@ -1,6 +1,8 @@
 package com.neueda.portfolio.controller;
 
+import com.neueda.portfolio.dto.HoldingDetailsDTO;
 import com.neueda.portfolio.entity.InvestmentOption;
+import com.neueda.portfolio.service.CurrentHoldingService;
 import com.neueda.portfolio.service.InvestmentOptionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ public class InvestmentOptionController {
     @Autowired
     private InvestmentOptionService investmentOptionService;
 
+    @Autowired
+    private CurrentHoldingService currentHoldingService;
+
     @GetMapping("/")
     public ResponseEntity<List<InvestmentOption>> getAllInvestmentOptions() {
         return ResponseEntity.ok(investmentOptionService.getAllInvestmentOptions());
@@ -31,6 +36,12 @@ public class InvestmentOptionController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/{id}/holdings")
+    public ResponseEntity<HoldingDetailsDTO> getHoldingDetails(@PathVariable Long id){
+        return ResponseEntity.ok(currentHoldingService.getHoldingDetails(id));
+    }
+
 
     @PostMapping("/")
     public ResponseEntity<Void> createInvestmentOption(@Valid @RequestBody InvestmentOption investmentOption) {
