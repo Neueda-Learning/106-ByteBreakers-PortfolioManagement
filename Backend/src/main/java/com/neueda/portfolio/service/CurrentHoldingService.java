@@ -58,9 +58,28 @@ public class CurrentHoldingService {
 
 
 
-    public void update(CurrentHolding holding) {
+    public void update(CurrentHolding holding, String action) {
+        if (action.equals("BUY")) {
+            CurrentHolding existingHolding = repository.findByOptionId(holding.getOptionId())
+                    .orElseThrow(() -> new RuntimeException("Holding not found for option"));
 
-        repository.update(holding);
+            existingHolding.setTotalQuantityOwned(existingHolding.getTotalQuantityOwned().add(holding.getTotalQuantityOwned()));
+            existingHolding.setTotalInvested(existingHolding.getTotalInvested().add(holding.getTotalInvested()));
+
+            repository.update(existingHolding);
+        } else if (action.equals("SELL")){
+            CurrentHolding existingHolding = repository.findByOptionId(holding.getOptionId())
+                    .orElseThrow(() -> new RuntimeException("Holding not found for option"));
+
+            if(existingHolding.getTotalQuantityOwned().compareTo(holding.getTotalQuantityOwned()) < 0) {
+                throw new RuntimeException("Cannot sell more than owned");
+            }
+
+            existingHolding.setTotalQuantityOwned(existingHolding.getTotalQuantityOwned().subtract(holding.getTotalQuantityOwned()));
+            existingHolding.setTotalInvested(existingHolding.getTotalInvested().subtract(holding.getTotalInvested()));
+
+            repository.update(existingHolding);
+        }
     }
 
 

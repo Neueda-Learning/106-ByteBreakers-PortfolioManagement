@@ -53,10 +53,11 @@ public class TransactionHistoryRepository {
     }
 
     public int createTransactionHistory(TransactionHistory transactionHistory) {
-        String sql = "INSERT INTO user_investments (investment_option_id, quantity, bought_price, purchase_date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO transaction_history (investment_option_id, action, quantity, bought_price, transaction_date) VALUES (?, ?, ?, ?, ?)";
         return jdbcTemplate.update(
                 sql,
                 transactionHistory.getInvestmentOptionId(),
+                transactionHistory.getAction(),
                 transactionHistory.getQuantity(),
                 transactionHistory.getBoughtPrice(),
                 transactionHistory.getPurchaseDate()

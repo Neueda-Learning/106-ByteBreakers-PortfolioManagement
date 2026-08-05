@@ -1,6 +1,9 @@
 DROP TABLE IF EXISTS current_holdings;
 DROP TABLE IF EXISTS transaction_history;
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS investment_options;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE investment_options (
 
@@ -33,7 +36,7 @@ CREATE TABLE transaction_history (
 
     bought_price DECIMAL(12,2) NOT NULL,
 
-    purchase_date DATE NOT NULL,
+     transaction_date DATE NOT NULL,
 
     CONSTRAINT fk_transaction_investment_option
         FOREIGN KEY (investment_option_id)

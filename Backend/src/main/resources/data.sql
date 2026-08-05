@@ -43,7 +43,7 @@ VALUES
 -- =========================================================
 
 INSERT INTO transaction_history
-(investment_option_id, action, quantity, transaction_price, transaction_date)
+(investment_option_id, action, quantity, bought_price, transaction_date)
 VALUES
 
 -- Reliance Industries
@@ -86,7 +86,7 @@ VALUES
 -- =========================================================
 
 INSERT INTO current_holdings
-(investment_option_id, total_quantity_owned, total_invested)
+(option_id, total_quantity_owned, total_invested)
 VALUES
 
 -- Reliance
