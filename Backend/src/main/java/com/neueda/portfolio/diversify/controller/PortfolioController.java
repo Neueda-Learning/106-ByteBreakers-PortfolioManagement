@@ -4,6 +4,7 @@ import com.neueda.portfolio.diversify.dto.SuggestionDTO;
 import com.neueda.portfolio.diversify.dto.SummaryDTO;
 import com.neueda.portfolio.diversify.service.DiversificationService;
 import com.neueda.portfolio.diversify.service.SummaryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -13,15 +14,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/portfolio")
 public class PortfolioController {
+      @Autowired
+    private DiversificationService diversificationService;
+      @Autowired
+    private  SummaryService summaryService;
 
-    private final DiversificationService diversificationService;
-    private final SummaryService summaryService;
 
-    public PortfolioController(DiversificationService diversificationService,
-                                SummaryService summaryService) {
-        this.diversificationService = diversificationService;
-        this.summaryService = summaryService;
-    }
 
     @GetMapping("/diversify")
     public List<SuggestionDTO> getSuggestions(@RequestParam(defaultValue = "5") int topN) {
