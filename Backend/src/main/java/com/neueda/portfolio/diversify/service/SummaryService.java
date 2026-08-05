@@ -6,6 +6,7 @@ import com.neueda.portfolio.diversify.model.Holdin;
 import com.neueda.portfolio.diversify.model.History;
 import com.neueda.portfolio.diversify.repository.HoldingsRepository;
 import com.neueda.portfolio.diversify.repository.HistoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,18 +23,15 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SummaryService {
-
-    private final HoldingsRepository currentHoldingsRepo;
-    private final HistoryRepository transactionHistoryRepo;
+        @Autowired
+    private HoldingsRepository currentHoldingsRepo;
+        @Autowired
+    private  HistoryRepository transactionHistoryRepo;
 
     @Value("${diversify.recent-investments-count:5}")
     private int recentInvestmentsCount;
 
-    public SummaryService(HoldingsRepository currentHoldingsRepo,
-                          HistoryRepository transactionHistoryRepo) {
-        this.currentHoldingsRepo = currentHoldingsRepo;
-        this.transactionHistoryRepo = transactionHistoryRepo;
-    }
+
 
     public SummaryDTO getSummary() {
         List<Holdin> holdings = currentHoldingsRepo.findAllWithOption();
