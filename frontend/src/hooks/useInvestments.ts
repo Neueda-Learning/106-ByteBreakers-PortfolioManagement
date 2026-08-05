@@ -18,7 +18,7 @@ export function useInvestments() {
     useEffect(() => {
         const fetchInvestments = async () => {
             try {
-                const response = await axios.get<InvestmentOption[]>('http://localhost:8081/investment-option/')
+                const response = await axios.get<InvestmentOption[]>('http://localhost:8081/investment-options/')
                 setInvestments(Array.isArray(response.data) ? response.data : [])
             } catch {
                 setInvestments([])
