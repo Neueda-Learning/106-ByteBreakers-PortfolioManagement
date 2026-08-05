@@ -16,10 +16,13 @@ import {
   DataTablePagination,
   SearchBar,
   SectionCard,
+  showToast,
   StatusBadge,
+  TradeQuantityModal,
   Toolbar,
 } from "@/components/common";
 import { useInvestments } from "@/hooks/useInvestments";
+import { useTradeAction } from "@/hooks/useTradeAction";
 
 interface InvestmentOption {
   id: number;
@@ -36,7 +39,38 @@ const InvestmentOptions = () => {
   const [category, setCategory] = useState<string | null>("All");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<string | null>("Name");
+  const [selectedInvestment, setSelectedInvestment] =
+    useState<InvestmentOption | null>(null);
   const { investments, loading } = useInvestments();
+  const { executeTrade, submitting } = useTradeAction();
+
+  const handleConfirmBuy = async (quantity: number) => {
+    if (!selectedInvestment) {
+      return;
+    }
+
+    try {
+      await executeTrade({
+        optionId: selectedInvestment.id,
+        quantity,
+        currentPrice: selectedInvestment.currentPrice,
+        action: "buy",
+      });
+
+      showToast({
+        title: "Buy order submitted",
+        message: `Bought ${quantity} of ${selectedInvestment.name}.`,
+        tone: "success",
+      });
+      setSelectedInvestment(null);
+    } catch {
+      showToast({
+        title: "Unable to place order",
+        message: "Please try again.",
+        tone: "error",
+      });
+    }
+  };
 
   const categoryOptions = useMemo(() => {
     const categories = Array.from(
@@ -127,7 +161,7 @@ const InvestmentOptions = () => {
       {
         id: "buy",
         header: "Actions",
-        cell: () => (
+        cell: ({ row }) => (
           <Group gap="xs" wrap="nowrap">
             {/* <Button
               size="sm"
@@ -140,7 +174,11 @@ const InvestmentOptions = () => {
               View Details
             </Button> */}
 
-            <Button size="sm" variant="filled">
+            <Button
+              color="green"
+              size="sm"
+              onClick={() => setSelectedInvestment(row.original)}
+            >
               Buy
             </Button>
           </Group>
@@ -223,6 +261,16 @@ const InvestmentOptions = () => {
           </>
         )}
       </SectionCard>
+
+      <TradeQuantityModal
+        opened={selectedInvestment != null}
+        action="buy"
+        investmentName={selectedInvestment?.name ?? "Investment"}
+        currentPrice={selectedInvestment?.currentPrice ?? 0}
+        submitting={submitting}
+        onClose={() => setSelectedInvestment(null)}
+        onConfirm={(quantity) => void handleConfirmBuy(quantity)}
+      />
     </Stack>
   );
 };

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -28,9 +29,15 @@ import {
   IconTrendingUp,
 } from "@tabler/icons-react";
 
-import { Button, SectionCard } from "@/components/common";
+import {
+  Button,
+  SectionCard,
+  showToast,
+  TradeQuantityModal,
+} from "@/components/common";
 import { PageContainer } from "@/components/layout";
 import { useInvestmentDetails } from "@/hooks/useInvestmentDetails";
+import { useTradeAction, type TradeAction } from "@/hooks/useTradeAction";
 import { formatCurrency } from "@/util/currency";
 
 ChartJS.register(
@@ -48,8 +55,58 @@ const InvestmentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const parsedId = Number(id);
+  const [tradeAction, setTradeAction] = useState<TradeAction | null>(null);
 
-  const { investment, loading, error } = useInvestmentDetails(parsedId);
+  const { investment, loading, error, refetch } =
+    useInvestmentDetails(parsedId);
+  const { executeTrade, submitting } = useTradeAction();
+
+  const handleOpenTrade = (action: TradeAction) => {
+    setTradeAction(action);
+  };
+
+  const handleConfirmTrade = async (quantity: number) => {
+    if (!investment || !tradeAction) {
+      return;
+    }
+
+    const quantityOwned = toNumber(investment.quantityOwned);
+    if (tradeAction === "sell" && quantity > quantityOwned) {
+      showToast({
+        title: "Invalid sell quantity",
+        message: `You only own ${quantityOwned.toLocaleString("en-IN")} units.`,
+        tone: "warning",
+      });
+      return;
+    }
+
+    try {
+      await executeTrade({
+        optionId: investment.id,
+        quantity,
+        currentPrice: toNumber(investment.currentPrice),
+        action: tradeAction,
+      });
+
+      showToast({
+        title: `${tradeAction === "buy" ? "Buy" : "Sell"} order submitted`,
+        message: `${tradeAction === "buy" ? "Bought" : "Sold"} ${quantity} of ${investment.name}.`,
+        tone: "success",
+      });
+
+      setTradeAction(null);
+      await refetch();
+    } catch {
+      showToast({
+        title: "Unable to place order",
+        message:
+          tradeAction === "sell"
+            ? "Sell failed. Ensure you have enough holdings and try again."
+            : "Buy failed. Please try again.",
+        tone: "error",
+      });
+    }
+  };
 
   const priceHistoryData = useMemo(() => {
     if (!investment) {
@@ -135,11 +192,20 @@ const InvestmentDetails = () => {
                   </Text> */}
 
                   <Group>
-                    <Button color="green" size="sm">
+                    <Button
+                      color="green"
+                      size="sm"
+                      onClick={() => handleOpenTrade("buy")}
+                    >
                       Buy
                     </Button>
 
-                    <Button color="red" variant="outline" size="sm">
+                    <Button
+                      color="red"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenTrade("sell")}
+                    >
                       Sell
                     </Button>
                   </Group>
@@ -233,6 +299,21 @@ const InvestmentDetails = () => {
           </SectionCard>
         </SimpleGrid>
       )}
+
+      <TradeQuantityModal
+        opened={tradeAction != null && !!investment}
+        action={tradeAction ?? "buy"}
+        investmentName={investment?.name ?? "Investment"}
+        currentPrice={toNumber(investment?.currentPrice)}
+        maxQuantity={
+          tradeAction === "sell"
+            ? toNumber(investment?.quantityOwned)
+            : undefined
+        }
+        submitting={submitting}
+        onClose={() => setTradeAction(null)}
+        onConfirm={(quantity) => void handleConfirmTrade(quantity)}
+      />
     </PageContainer>
   );
 };

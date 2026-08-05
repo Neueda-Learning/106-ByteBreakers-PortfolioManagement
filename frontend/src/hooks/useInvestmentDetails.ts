@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface InvestmentDetail {
   id: number;
@@ -18,37 +18,38 @@ export function useInvestmentDetails(id?: number) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchInvestmentDetails = async () => {
-      if (!id || Number.isNaN(id)) {
-        setInvestment(null);
-        setError("Invalid investment id.");
-        setLoading(false);
-        return;
-      }
+  const fetchInvestmentDetails = useCallback(async () => {
+    if (!id || Number.isNaN(id)) {
+      setInvestment(null);
+      setError("Invalid investment id.");
+      setLoading(false);
+      return;
+    }
 
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await axios.get<InvestmentDetail>(
-          `http://localhost:8081/investment-options/${id}/holdings`,
-        );
-        setInvestment(response.data ?? null);
-      } catch {
-        setInvestment(null);
-        setError("Unable to load investment details.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void fetchInvestmentDetails();
+    try {
+      const response = await axios.get<InvestmentDetail>(
+        `http://localhost:8081/investment-options/${id}/holdings`,
+      );
+      setInvestment(response.data ?? null);
+    } catch {
+      setInvestment(null);
+      setError("Unable to load investment details.");
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    void fetchInvestmentDetails();
+  }, [fetchInvestmentDetails]);
 
   return {
     investment,
     loading,
     error,
+    refetch: fetchInvestmentDetails,
   };
 }
