@@ -1,260 +1,238 @@
 import { useMemo, useState } from "react";
 
-import {
-    Button,
-    Select,
-    SimpleGrid,
-} from "@mantine/core";
+import { Button, Select, SimpleGrid, Text } from "@mantine/core";
 
 import {
-    type ColumnDef,
-    getCoreRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
+  type ColumnDef,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
 
 import {
-    DataTable,
-    DataTablePagination,
-    Toolbar,
-    SearchBar,
-    SectionCard,
-    StatCard,
-    StatusBadge,
+  DataTable,
+  DataTablePagination,
+  Toolbar,
+  SearchBar,
+  SectionCard,
+  StatCard,
+  StatusBadge,
 } from "@/components/common";
 
 import { PageContainer } from "@/components/layout";
+import { type MyInvestment, useMyInvestments } from "@/hooks/useMyInvestments";
 
-interface Investment {
-    id: number;
-    name: string;
-    category: string;
-    quantity: number;
-    averageBuyPrice: number;
-    currentPrice: number;
-}
+const formatCurrency = (value: number) => `₹${value.toLocaleString("en-IN")}`;
 
-const investments: Investment[] = [
-    {
-        id: 1,
-        name: "Tata Motors",
-        category: "Equity",
-        quantity: 20,
-        averageBuyPrice: 720,
-        currentPrice: 755,
-    },
-    {
-        id: 2,
-        name: "HDFC Flexi Cap Fund",
-        category: "Mutual Fund",
-        quantity: 45,
-        averageBuyPrice: 82,
-        currentPrice: 88,
-    },
-    {
-        id: 3,
-        name: "Bitcoin",
-        category: "Crypto",
-        quantity: 0.05,
-        averageBuyPrice: 5400000,
-        currentPrice: 5900000,
-    },
-    {
-        id: 4,
-        name: "SGB 2033",
-        category: "Bond",
-        quantity: 10,
-        averageBuyPrice: 7100,
-        currentPrice: 7350,
-    },
-];
+const toNumber = (value: number | string) => Number(value);
 
-const formatCurrency = (value: number) =>
-    `₹${value.toLocaleString("en-IN")}`;
+const trendColor = (trendValue: string) => {
+  const trend = String(trendValue || "").toLowerCase();
+
+  if (trend.includes("up")) {
+    return "green";
+  }
+
+  if (trend.includes("down")) {
+    return "red";
+  }
+
+  return "gray";
+};
 
 const Investments = () => {
-    const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");
+  const { investments, loading } = useMyInvestments();
 
-    const filteredData = useMemo(() => {
-        return investments.filter((investment) =>
-            investment.name
-                .toLowerCase()
-                .includes(search.toLowerCase())
-        );
-    }, [search]);
+  const portfolioValue = useMemo(
+    () =>
+      investments.reduce(
+        (total, investment) =>
+          total +
+          toNumber(investment.currentPrice) *
+            toNumber(investment.totalQuantityOwned),
+        0,
+      ),
+    [investments],
+  );
 
-    const columns = useMemo<ColumnDef<Investment>[]>(
-        () => [
-            {
-                accessorKey: "name",
-                header: "Investment",
-            },
-            {
-                accessorKey: "category",
-                header: "Category",
-                cell: ({ row }) => (
-                    <StatusBadge color="brand">
-                        {row.original.category}
-                    </StatusBadge>
-                ),
-            },
-            {
-                accessorKey: "quantity",
-                header: "Quantity",
-            },
-            {
-                header: "Avg. Buy",
-                cell: ({ row }) =>
-                    formatCurrency(row.original.averageBuyPrice),
-            },
-            {
-                id: "currentPrice",
-                header: "Current Price",
-                cell: ({ row }) =>
-                    formatCurrency(row.original.currentPrice),
-            },
-            {
-                id: "currentValue",
-                header: "Current Value",
-                cell: ({ row }) =>
-                    formatCurrency(
-                        row.original.currentPrice *
-                        row.original.quantity
-                    ),
-            },
-            {
-                id: "profitLoss",
-                header: "P/L",
-                cell: ({ row }) => {
-                    const profit =
-                        (row.original.currentPrice -
-                            row.original.averageBuyPrice) *
-                        row.original.quantity;
+  const quantityOwned = useMemo(
+    () =>
+      investments.reduce(
+        (total, investment) => total + toNumber(investment.totalQuantityOwned),
+        0,
+      ),
+    [investments],
+  );
 
-                    const positive = profit >= 0;
+  const trendingUpCount = useMemo(
+    () =>
+      investments.filter((investment) =>
+        String(investment.trend || "")
+          .toLowerCase()
+          .includes("up"),
+      ).length,
+    [investments],
+  );
 
-                    return (
-                        <span
-                            style={{
-                                color: positive
-                                    ? "green"
-                                    : "red",
-                                fontWeight: 600,
-                            }}
-                        >
-                            {positive ? "+" : ""}
-                            {formatCurrency(profit)}
-                        </span>
-                    );
-                },
-            },
-            {
-                id: "actions",
-                header: "",
-                cell: () => (
-                    <Button
-                        variant="light"
-                        color="brand"
-                        size="xs"
-                    >
-                        View Details
-                    </Button>
-                ),
-            },
-        ],
-        []
+  const filteredData = useMemo(() => {
+    return investments.filter((investment) =>
+      `${investment.name} ${investment.category}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
+  }, [investments, search]);
 
-    const table = useReactTable({
-        data: filteredData,
-        columns,
+  const columns = useMemo<ColumnDef<MyInvestment>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Investment",
+      },
+      {
+        accessorKey: "category",
+        header: "Category",
+        cell: ({ row }) => (
+          <StatusBadge color="brand">{row.original.category}</StatusBadge>
+        ),
+      },
+      {
+        accessorKey: "totalQuantityOwned",
+        header: "Quantity",
+        cell: ({ row }) =>
+          toNumber(row.original.totalQuantityOwned).toLocaleString("en-IN"),
+      },
+      {
+        id: "currentPrice",
+        header: "Current Price",
+        cell: ({ row }) => formatCurrency(toNumber(row.original.currentPrice)),
+      },
+      {
+        id: "currentValue",
+        header: "Current Value",
+        cell: ({ row }) =>
+          formatCurrency(
+            toNumber(row.original.currentPrice) *
+              toNumber(row.original.totalQuantityOwned),
+          ),
+      },
+      {
+        accessorKey: "trend",
+        header: "Trend",
+        cell: ({ row }) => {
+          const trend = String(row.original.trend || "").toLowerCase();
+          const normalizedTrend = trend.replaceAll("_", " ");
 
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel:
-            getPaginationRowModel(),
-
-        initialState: {
-            pagination: {
-                pageSize: 5,
-            },
+          return (
+            <StatusBadge color={trendColor(trend)}>
+              {normalizedTrend.toUpperCase()}
+            </StatusBadge>
+          );
         },
-    });
+      },
+      {
+        id: "actions",
+        header: "",
+        cell: () => (
+          <Button variant="light" color="brand" size="xs">
+            View Details
+          </Button>
+        ),
+      },
+    ],
+    [],
+  );
 
-    return (
-        <PageContainer title="My Investments">
+  const table = useReactTable({
+    data: filteredData,
+    columns,
 
-            <SimpleGrid cols={3} spacing="md" mb="lg">
-                <StatCard
-                    title="Portfolio Value"
-                    value="₹7,24,300"
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+
+    initialState: {
+      pagination: {
+        pageSize: 5,
+      },
+    },
+  });
+
+  return (
+    <PageContainer title="My Investments">
+      <SimpleGrid cols={3} spacing="md" mb="lg">
+        <StatCard
+          title="Portfolio Value"
+          value={formatCurrency(portfolioValue)}
+        />
+
+        <StatCard
+          title="Holdings"
+          value={`${investments.length} Investments`}
+        />
+
+        <StatCard
+          title="Total Units"
+          value={quantityOwned.toLocaleString("en-IN")}
+        />
+
+        <StatCard
+          title="Trending Up"
+          value={`${trendingUpCount} Assets`}
+          trend="positive"
+        />
+      </SimpleGrid>
+
+      <SectionCard
+        title="My Investments"
+        rightSection={
+          <Toolbar
+            leftSection={
+              <>
+                <SearchBar
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search investments..."
                 />
 
-                <StatCard
-                    title="Holdings"
-                    value="4 Investments"
+                <Select
+                  placeholder="Category"
+                  data={["All", "Equity", "Mutual Fund", "Crypto", "Bond"]}
+                  w={180}
+                  variant="filled"
+                  color="brand"
+                  radius="md"
                 />
+              </>
+            }
+            rightSection={
+              <Select
+                placeholder="Sort"
+                data={["Name", "Profit/Loss", "Current Value"]}
+                w={180}
+                variant="filled"
+                color="brand"
+                radius="md"
+              />
+            }
+          />
+        }
+      >
+        {loading ? (
+          <Text c="dimmed">Loading investments...</Text>
+        ) : filteredData.length === 0 ? (
+          <Text c="dimmed">No investments found.</Text>
+        ) : (
+          <>
+            <DataTable table={table} />
 
-                <StatCard
-                    title="Unrealized P/L"
-                    value="+₹34,500"
-                    trend="positive"
-                />
-            </SimpleGrid>
-
-            <SectionCard title="My Investments"
-                rightSection={
-                    <Toolbar
-                        leftSection={
-                            <>
-                                <SearchBar
-                                    value={search}
-                                    onChange={setSearch}
-                                    placeholder="Search investments..."
-                                />
-
-                                <Select
-                                    placeholder="Category"
-                                    data={[
-                                        "All",
-                                        "Equity",
-                                        "Mutual Fund",
-                                        "Crypto",
-                                        "Bond",
-                                    ]}
-                                    w={180}
-                                    variant="filled"
-                                    color="brand"
-                                    radius="md"
-                                />
-                            </>
-                        }
-                        rightSection={
-                            <Select
-                                placeholder="Sort"
-                                data={[
-                                    "Name",
-                                    "Profit/Loss",
-                                    "Current Value",
-                                ]}
-                                w={180}
-                                variant="filled"
-                                color="brand"
-                                radius="md"
-                            />
-                        }
-                    />
-                }>
-
-                <DataTable table={table} />
-
-                <DataTablePagination table={table} />
-
-            </SectionCard>
-
-        </PageContainer>
-    );
+            <DataTablePagination table={table} />
+          </>
+        )}
+      </SectionCard>
+    </PageContainer>
+  );
 };
 
 export default Investments;
