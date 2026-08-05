@@ -3,20 +3,22 @@ package com.neueda.portfolio.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class UserInvestment {
+public class TransactionHistory {
 
     private Long id;
     private InvestmentOption investmentOption;
+    private String action;
     private BigDecimal quantity;
     private BigDecimal boughtPrice;
     private LocalDate purchaseDate;
 
-    public UserInvestment() {}
+    public TransactionHistory() {}
 
-    public UserInvestment(Long id, InvestmentOption investmentOption, BigDecimal quantity,
+    public TransactionHistory(Long id, InvestmentOption investmentOption, String action, BigDecimal quantity,
                            BigDecimal boughtPrice, LocalDate purchaseDate) {
         this.id = id;
         this.investmentOption = investmentOption;
+        this.action = action;
         this.quantity = quantity;
         this.boughtPrice = boughtPrice;
         this.purchaseDate = purchaseDate;
@@ -36,4 +38,7 @@ public class UserInvestment {
 
     public LocalDate getPurchaseDate() { return purchaseDate; }
     public void setPurchaseDate(LocalDate purchaseDate) { this.purchaseDate = purchaseDate; }
+
+    public String getAction() { return action; }
+    public void setAction(String action) { this.action = action; }
 }
