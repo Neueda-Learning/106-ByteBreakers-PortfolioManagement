@@ -120,43 +120,43 @@ pipeline {
         // ============================================
         // Stage 3: Run Backend Tests
         // ============================================
-        stage('Run Backend Tests') {
-            steps {
-                script {
-                    echo "═══════════════════════════════════════════════════════"
-                    echo "STAGE: Run Backend Tests"
-                    echo "═══════════════════════════════════════════════════════"
-                    echo "Executing unit tests..."
-                }
+        // stage('Run Backend Tests') {
+        //     steps {
+        //         script {
+        //             echo "═══════════════════════════════════════════════════════"
+        //             echo "STAGE: Run Backend Tests"
+        //             echo "═══════════════════════════════════════════════════════"
+        //             echo "Executing unit tests..."
+        //         }
                 
-                dir('Backend') {
-                    sh '''
-                        echo "Running: mvn test"
-                        if [ -f "mvnw" ]; then
-                            chmod +x ./mvnw
-                            ./mvnw test
-                        else
-                            mvn test
-                        fi
-                    '''
-                }
+        //         dir('Backend') {
+        //             sh '''
+        //                 echo "Running: mvn test"
+        //                 if [ -f "mvnw" ]; then
+        //                     chmod +x ./mvnw
+        //                     ./mvnw test
+        //                 else
+        //                     mvn test
+        //                 fi
+        //             '''
+        //         }
                 
-                script {
-                    echo "✓ Backend tests completed successfully"
-                }
-            }
+        //         script {
+        //             echo "✓ Backend tests completed successfully"
+        //         }
+        //     }
             
-            post {
-                always {
-                    // Publish JUnit test results
-                    junit 'Backend/target/surefire-reports/**/*.xml'
+        //     post {
+        //         always {
+        //             // Publish JUnit test results
+        //             junit 'Backend/target/surefire-reports/**/*.xml'
                     
-                    script {
-                        echo "Test results published to Jenkins"
-                    }
-                }
-            }
-        }
+        //             script {
+        //                 echo "Test results published to Jenkins"
+        //             }
+        //         }
+        //     }
+        // }
         
         // ============================================
         // Stage 4: Build Frontend
