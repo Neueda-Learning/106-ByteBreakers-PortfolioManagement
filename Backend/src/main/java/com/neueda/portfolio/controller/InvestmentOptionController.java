@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/investment-options")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class InvestmentOptionController {
 
     @Autowired
