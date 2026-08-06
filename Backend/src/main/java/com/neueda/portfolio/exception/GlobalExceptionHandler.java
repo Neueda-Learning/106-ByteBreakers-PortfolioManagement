@@ -40,6 +40,16 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(TransactionHistoryNotFoundException.class)
+    public ResponseEntity<String> handleTransactionHistoryNotFoundException(
+            TransactionHistoryNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> genericHandleException(Exception ex) {
 
