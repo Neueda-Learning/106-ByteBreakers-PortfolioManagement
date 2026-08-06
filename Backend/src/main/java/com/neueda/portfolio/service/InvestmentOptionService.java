@@ -19,11 +19,7 @@ public class InvestmentOptionService {
     }
 
     public InvestmentOption getInvestmentOptionById(Long id) {
-        InvestmentOption investmentOption = investmentOptionRepository.findById(id);
-        if (investmentOption == null) {
-            throw new RuntimeException("Investment option not found with id: " + id);
-        }
-        return investmentOption;
+        return investmentOptionRepository.findById(id);
     }
 
     public List<MyInvestmentsDTO> getAllMyInvestments() {
