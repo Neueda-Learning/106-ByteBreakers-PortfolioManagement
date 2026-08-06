@@ -31,11 +31,8 @@ public class InvestmentOptionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<InvestmentOption> getInvestmentOptionById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(investmentOptionService.getInvestmentOptionById(id));
-        } catch (RuntimeException ex) {
-            return ResponseEntity.notFound().build();
-        }
+
+        return ResponseEntity.ok(investmentOptionService.getInvestmentOptionById(id));
     }
 
     @GetMapping("/{id}/holdings")
