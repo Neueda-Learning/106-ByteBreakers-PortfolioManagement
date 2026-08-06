@@ -45,9 +45,10 @@ services:
     # Location inside container: /var/lib/mysql
     volumes:
       - mysql-data:/var/lib/mysql
-      # Optionally, copy initialization scripts
-      # - ./Backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      # - ./Backend/src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+      # Copy initialization scripts to docker-entrypoint-initdb.d/
+      # MySQL automatically executes .sql files in this directory during initialization
+      - ./Backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./Backend/src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql
 
     # Docker network for service-to-service communication
     networks:
