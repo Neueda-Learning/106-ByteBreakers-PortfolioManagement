@@ -1,10 +1,13 @@
 package com.neueda.portfolio.diversify.service;
 
 import com.neueda.portfolio.diversify.dto.SuggestionDTO;
+import com.neueda.portfolio.diversify.exception.DiversifyBadRequestException;
+import com.neueda.portfolio.diversify.exception.DiversifyServiceException;
 import com.neueda.portfolio.diversify.model.Holdin;
 import com.neueda.portfolio.diversify.model.Option;
 import com.neueda.portfolio.diversify.repository.HoldingsRepository;
 import com.neueda.portfolio.diversify.repository.OptionRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -45,62 +48,80 @@ public class DiversificationService {
     }
 
     public List<SuggestionDTO> getSuggestions(int topN) {
-        List<Holdin> holdings = currentHoldingsRepo.findAllWithOption();
-        List<Option> allOptions = optionRepo.findAll();
-
-        Map<String, Double> currentAllocationPct = computeCurrentAllocation(holdings);
-        Map<String, Double> avgReturnByCategory = computePersonalReturns(holdings);
-        Map<Long, Double> trendScoreByOption = computeTrendScores(allOptions);
-        Map<Long, Double> rawMarketSignal = computeRawMarketSignal(allOptions, trendScoreByOption);
-        Map<Long, Double> marketNorm = normalize(rawMarketSignal);
-        Map<Long, Double> volatilityByOption = allOptions.stream()
-                .collect(Collectors.toMap(Option::getId, this::volatilityOrDefault));
-        Map<Long, Double> volatilityNorm = normalize(volatilityByOption);
-
-        Set<String> allCategories = new HashSet<>(currentAllocationPct.keySet());
-        allOptions.forEach(o -> allCategories.add(o.getCategory()));
-        double targetAllocation = allCategories.isEmpty() ? 0 : 1.0 / allCategories.size();
-
-        List<SuggestionDTO> suggestions = new ArrayList<>();
-
-        for (Option option : allOptions) {
-            String category = option.getCategory();
-            double currentPct = currentAllocationPct.getOrDefault(category, 0.0);
-            double concentrationGap = targetAllocation - currentPct;
-            boolean overweight = currentPct > targetAllocation * overweightMultiplier;
-
-            double marketScore = marketNorm.getOrDefault(option.getId(), 0.5);
-
-            double personalRaw = avgReturnByCategory.getOrDefault(category, 0.0);
-            double personalClipped = Math.max(-0.5, Math.min(0.5, personalRaw));
-            double personalScoreNorm = personalClipped + 0.5;
-
-            double rawScore =
-                    weightConcentration * Math.max(concentrationGap, 0)
-                    + weightMarket * marketScore
-                    + weightPersonal * personalScoreNorm;
-
-            double riskPenalty = volatilityPenaltyStrength * volatilityNorm.getOrDefault(option.getId(), 0.5);
-            double finalScore = rawScore * (1 - riskPenalty);
-
-            if (overweight) {
-                finalScore *= 0.2;
-            }
-
-            String reason = buildReason(category, currentPct, targetAllocation,
-                    trendScoreByOption.getOrDefault(option.getId(), 0.0),
-                    avgReturnByCategory.get(category),
-                    volatilityOrDefault(option));
-
-            suggestions.add(new SuggestionDTO(
-                    option.getId(), option.getName(), category,
-                    Math.round(finalScore * 10000.0) / 10000.0,
-                    reason
-            ));
+        if (topN <= 0) {
+            throw new DiversifyBadRequestException("topN must be greater than 0.");
+        }
+        if (topN > 100) {
+            throw new DiversifyBadRequestException("topN must be less than or equal to 100.");
         }
 
-        suggestions.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
-        return suggestions.stream().limit(topN).collect(Collectors.toList());
+        try {
+            List<Holdin> holdings = currentHoldingsRepo.findAllWithOption();
+            List<Option> allOptions = optionRepo.findAll();
+            if (allOptions.isEmpty()) {
+                throw new DiversifyServiceException("No investment options available to generate suggestions.");
+            }
+
+            Map<String, Double> currentAllocationPct = computeCurrentAllocation(holdings);
+            Map<String, Double> avgReturnByCategory = computePersonalReturns(holdings);
+            Map<Long, Double> trendScoreByOption = computeTrendScores(allOptions);
+            Map<Long, Double> rawMarketSignal = computeRawMarketSignal(allOptions, trendScoreByOption);
+            Map<Long, Double> marketNorm = normalize(rawMarketSignal);
+            Map<Long, Double> volatilityByOption = allOptions.stream()
+                    .collect(Collectors.toMap(Option::getId, this::volatilityOrDefault));
+            Map<Long, Double> volatilityNorm = normalize(volatilityByOption);
+
+            Set<String> allCategories = new HashSet<>(currentAllocationPct.keySet());
+            allOptions.forEach(o -> allCategories.add(normalizeCategory(o.getCategory())));
+            double targetAllocation = allCategories.isEmpty() ? 0 : 1.0 / allCategories.size();
+
+            List<SuggestionDTO> suggestions = new ArrayList<>();
+
+            for (Option option : allOptions) {
+                String category = normalizeCategory(option.getCategory());
+                double currentPct = currentAllocationPct.getOrDefault(category, 0.0);
+                double concentrationGap = targetAllocation - currentPct;
+                boolean overweight = currentPct > targetAllocation * overweightMultiplier;
+
+                double marketScore = marketNorm.getOrDefault(option.getId(), 0.5);
+
+                double personalRaw = avgReturnByCategory.getOrDefault(category, 0.0);
+                double personalClipped = Math.max(-0.5, Math.min(0.5, personalRaw));
+                double personalScoreNorm = personalClipped + 0.5;
+
+                double rawScore =
+                        weightConcentration * Math.max(concentrationGap, 0)
+                        + weightMarket * marketScore
+                        + weightPersonal * personalScoreNorm;
+
+                double riskPenalty = volatilityPenaltyStrength * volatilityNorm.getOrDefault(option.getId(), 0.5);
+                double finalScore = rawScore * (1 - riskPenalty);
+
+                if (overweight) {
+                    finalScore *= 0.2;
+                }
+
+                String reason = buildReason(category, currentPct, targetAllocation,
+                        trendScoreByOption.getOrDefault(option.getId(), 0.0),
+                        avgReturnByCategory.get(category),
+                        volatilityOrDefault(option));
+
+                suggestions.add(new SuggestionDTO(
+                        option.getId(), option.getName(), category,
+                        Math.round(finalScore * 10000.0) / 10000.0,
+                        reason
+                ));
+            }
+
+            suggestions.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
+            return suggestions.stream().limit(topN).collect(Collectors.toList());
+        } catch (DataAccessException ex) {
+            throw ex;
+        } catch (DiversifyBadRequestException | DiversifyServiceException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new DiversifyServiceException("Failed to generate diversification suggestions.", ex);
+        }
     }
 
     // -----------------------------------------------------------------
@@ -115,7 +136,7 @@ public class DiversificationService {
             double qty = h.getTotalQuantityOwned().doubleValue();
             double currentPrice = h.getInvestmentOption().getCurrentPrice().doubleValue();
             double value = qty * currentPrice;
-            String category = h.getInvestmentOption().getCategory();
+            String category = normalizeCategory(h.getInvestmentOption().getCategory());
             valueByCategory.merge(category, value, Double::sum);
             total += value;
         }
@@ -138,7 +159,7 @@ public class DiversificationService {
             double qty = h.getTotalQuantityOwned().doubleValue();
             double currentValue = qty * h.getInvestmentOption().getCurrentPrice().doubleValue();
             double returnPct = (currentValue - invested) / invested;
-            returnsByCategory.computeIfAbsent(h.getInvestmentOption().getCategory(), k -> new ArrayList<>())
+            returnsByCategory.computeIfAbsent(normalizeCategory(h.getInvestmentOption().getCategory()), k -> new ArrayList<>())
                     .add(returnPct);
         }
         Map<String, Double> avgByCategory = new HashMap<>();
@@ -213,5 +234,9 @@ public class DiversificationService {
             parts.add("note: high volatility");
         }
         return parts.isEmpty() ? "neutral signal" : String.join("; ", parts);
+    }
+
+    private String normalizeCategory(String category) {
+        return (category == null || category.isBlank()) ? "Uncategorized" : category;
     }
 }
