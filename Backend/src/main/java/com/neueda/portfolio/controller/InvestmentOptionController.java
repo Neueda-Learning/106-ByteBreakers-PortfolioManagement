@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/investment-options")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class InvestmentOptionController {
 
     @Autowired
@@ -31,11 +31,8 @@ public class InvestmentOptionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<InvestmentOption> getInvestmentOptionById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(investmentOptionService.getInvestmentOptionById(id));
-        } catch (RuntimeException ex) {
-            return ResponseEntity.notFound().build();
-        }
+
+        return ResponseEntity.ok(investmentOptionService.getInvestmentOptionById(id));
     }
 
     @GetMapping("/{id}/holdings")

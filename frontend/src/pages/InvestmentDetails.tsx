@@ -25,8 +25,8 @@ import { Line } from "react-chartjs-2";
 
 import {
   IconArrowLeft,
-  IconTrendingDown,
-  IconTrendingUp,
+  //   IconTrendingDown,
+  //   IconTrendingUp,
 } from "@tabler/icons-react";
 
 import {

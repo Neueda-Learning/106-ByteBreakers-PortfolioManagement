@@ -41,10 +41,10 @@ const StatCard = ({
       radius="lg"
       shadow="sm"
       p="lg"
-      sx={(theme) => ({
-        backgroundColor: theme.colors.brand[0],
-        borderColor: theme.colors.brand[2],
-      })}
+      //   sx={(theme) => ({
+      //     backgroundColor: theme.colors.brand[0],
+      //     borderColor: theme.colors.brand[2],
+      //   })}
     >
       <Stack gap="xs">
         <Group justify="space-between">

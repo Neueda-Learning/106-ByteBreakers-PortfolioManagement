@@ -7,6 +7,9 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import com.neueda.portfolio.exception.HoldingNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import com.neueda.portfolio.exception.InvestmentDetailsNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -163,11 +166,20 @@ public class CurrentHoldingRepository {
                 WHERE io.id = ?
                 """;
 
-        return jdbcTemplate.queryForObject(
-                sql,
-                new BeanPropertyRowMapper<>(HoldingDetailsDTO.class),
-                id
-        );
+        try {
+
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    new BeanPropertyRowMapper<>(HoldingDetailsDTO.class),
+                    id
+            );
+
+        } catch (EmptyResultDataAccessException e) {
+
+            throw new HoldingNotFoundException(
+                    "Holding with id " + id + " not found"
+            );
+        }
     }
 
     public InvestmentDetailDTO getInvestmentDetails(Long id)
@@ -188,10 +200,18 @@ public class CurrentHoldingRepository {
             WHERE io.id = ?
             """;
 
-        return jdbcTemplate.queryForObject(
-                sql,
-                new BeanPropertyRowMapper<>(InvestmentDetailDTO.class),
-                id
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    new BeanPropertyRowMapper<>(InvestmentDetailDTO.class),
+                    id
+            );
+
+        } catch (EmptyResultDataAccessException e) {
+
+            throw new InvestmentDetailsNotFoundException(
+                    "Investment details for holding id " + id + " not found"
+            );
+        }
     }
 }

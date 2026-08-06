@@ -62,6 +62,12 @@ const TradeQuantityModal = ({
     await onConfirm(numericQuantity);
   };
 
+  const handleQuantityChange = (value: number | string) => {
+    setQuantity(
+      value === "" ? "" : typeof value === "string" ? parseFloat(value) : value,
+    );
+  };
+
   return (
     <Modal
       opened={opened}
@@ -82,7 +88,7 @@ const TradeQuantityModal = ({
           step={1}
           decimalScale={2}
           value={quantity}
-          onChange={setQuantity}
+          onChange={handleQuantityChange}
           max={maxQuantity}
           allowNegative={false}
           clampBehavior="strict"
