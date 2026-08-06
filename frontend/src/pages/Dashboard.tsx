@@ -98,7 +98,9 @@ const Dashboard = () => {
         header: "Quantity",
         meta: { align: "right" },
         cell: ({ row }) =>
-          Number(row.original.quantity).toLocaleString("en-IN"),
+          Number(row.original.quantity).toLocaleString("en-IN", {
+            maximumFractionDigits: 6,
+          }),
       },
       {
         accessorKey: "price",
@@ -135,37 +137,6 @@ const Dashboard = () => {
 
   return (
     <PageContainer title="Dashboard">
-      {/* <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md" mb="md">
-        <StatCard
-          title="Total Investments"
-          value={
-            loading
-              ? "Loading..."
-              : formatCurrency(summary?.totalInvestment ?? 0)
-          }
-        />
-
-        <StatCard
-          title="Current Value"
-          value={
-            loading ? "Loading..." : formatCurrency(summary?.currentValue ?? 0)
-          }
-        />
-
-        <StatCard
-          title="Total Profit/Loss"
-          value={loading ? "Loading..." : formatCurrency(profitLoss)}
-          change={
-            loading
-              ? undefined
-              : `${
-                  (summary?.totalProfitLossPct ?? 0) >= 0 ? "+" : ""
-                }${(summary?.totalProfitLossPct ?? 0).toFixed(2)}%`
-          }
-          trend={profitTrend}
-        />
-      </SimpleGrid> */}
-
       <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md" mb="md">
         <SectionCard
           title="Investment Summary"
@@ -186,7 +157,7 @@ const Dashboard = () => {
               />
 
               <StatCard
-                title="Total Profit/Loss"
+                title="Total Returns"
                 value={formatCurrency(profitLoss)}
                 change={`${
                   (summary?.totalProfitLossPct ?? 0) >= 0 ? "+" : ""
@@ -197,16 +168,7 @@ const Dashboard = () => {
           )}
         </SectionCard>
 
-        <SectionCard
-          title="Allocation by Category"
-          //   rightSection={
-          //     <Tooltip label="Diversification Tool">
-          //       <ActionIcon variant="light" color="pink" size="lg">
-          //         <IconDiamond size={18} />
-          //       </ActionIcon>
-          //     </Tooltip>
-          //   }
-        >
+        <SectionCard title="Allocation by Category">
           {loading ? (
             <Text c="dimmed">Loading chart...</Text>
           ) : allocationEntries.length === 0 ? (
