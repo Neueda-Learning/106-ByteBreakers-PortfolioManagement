@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { ActionIcon, Group, SimpleGrid, Text, Tooltip } from "@mantine/core";
+import { Group, SimpleGrid, Text } from "@mantine/core";
 
 import {
   ArcElement,
