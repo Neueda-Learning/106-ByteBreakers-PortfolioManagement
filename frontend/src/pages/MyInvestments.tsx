@@ -126,17 +126,20 @@ const Investments = () => {
       {
         accessorKey: "totalQuantityOwned",
         header: "Quantity",
+        meta: { align: "right" },
         cell: ({ row }) =>
           toNumber(row.original.totalQuantityOwned).toLocaleString("en-IN"),
       },
       {
         id: "currentPrice",
         header: "Current Price",
+        meta: { align: "right" },
         cell: ({ row }) => formatCurrency(toNumber(row.original.currentPrice)),
       },
       {
         id: "currentValue",
         header: "Holdings",
+        meta: { align: "right" },
         cell: ({ row }) =>
           formatCurrency(
             toNumber(row.original.currentPrice) *

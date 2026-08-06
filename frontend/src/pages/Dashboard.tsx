@@ -96,12 +96,14 @@ const Dashboard = () => {
       {
         accessorKey: "quantity",
         header: "Quantity",
+        meta: { align: "right" },
         cell: ({ row }) =>
           Number(row.original.quantity).toLocaleString("en-IN"),
       },
       {
         accessorKey: "price",
         header: "Price",
+        meta: { align: "right" },
         cell: ({ row }) => formatCurrency(Number(row.original.price)),
       },
       {
