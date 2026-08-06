@@ -1,4 +1,4 @@
-import { AppShell, NavLink, Stack, Text, Title } from "@mantine/core";
+import { AppShell, NavLink, Stack, Title } from "@mantine/core";
 import { NavLink as RouterNavLink } from "react-router-dom";
 
 import { NAVIGATION_ITEMS } from "@/constants/navigation";
