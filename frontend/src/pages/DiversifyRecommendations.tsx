@@ -12,7 +12,7 @@ import {
   Title,
 } from "@mantine/core";
 import axios from "axios";
-import { API_BASE_URL } from "@/api/config";
+import { API_BASE_URL } from "../api/config";
 
 import {
   showToast,
@@ -55,7 +55,7 @@ const DiversifyRecommendations = () => {
 
       try {
         const response = await axios.get<DiversifySuggestion[]>(
-          `${API_BASE_URL}/diversify`,
+          `${API_BASE_URL}/api/portfolio/diversify`,
           {
             params: {
               topN: Number(topN ?? 5),
