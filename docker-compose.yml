@@ -57,10 +57,11 @@ services:
     # Restart policy - restart unless explicitly stopped
     restart: unless-stopped
 
-    # Health check to verify MySQL is ready
-    # Executes mysqladmin ping to check database connectivity
+    # Health check to verify MySQL is ready to accept queries
+    # Uses 'mysql -e SELECT 1' to verify the database is queryable, not just running
+    # This is more reliable than 'mysqladmin ping' which can pass before tables are ready
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-pn3u3da!"]
+      test: ["CMD", "mysql", "-u", "root", "-pn3u3da!", "-e", "SELECT 1"]
       interval: 10s
       timeout: 5s
       retries: 5
