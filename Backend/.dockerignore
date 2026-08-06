@@ -1,0 +1,68 @@
+# Maven build output
+target/
+*.jar
+*.class
+
+# Git and version control
+.git/
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Build and compilation artifacts
+build/
+dist/
+*.o
+*.a
+*.so
+*.dylib
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Maven-specific
+.m2/
+mvn_error.log
+mvn.log
+
+# OS-specific
+Thumbs.db
+.DS_Store
+
+# Documentation
+*.md
+*.rst
+*.txt
+HELP.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+Jenkinsfile
+
+# Docker files (don't need to copy into image)
+Dockerfile
+.dockerignore
+docker-compose*.yml

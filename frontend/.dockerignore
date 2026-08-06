@@ -1,0 +1,71 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json.bak
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Environment files (except .env.production which is needed for build)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.idea/
+.vscode/
+.vscode-test/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+*.sublime-project
+*.sublime-workspace
+.code-workspace
+
+# Git and version control
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Logs
+*.log
+logs/
+lerna-debug.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+.cache/
+
+# OS-specific
+Thumbs.db
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+
+# Documentation and configuration
+*.md
+README.md
+CHANGELOG.md
+.editorconfig
+.prettierrc
+.eslintrc*
+.husky/
+*.yml
+*.yaml
+
+# Docker files (don't need to copy into image)
+Dockerfile
+.dockerignore
+docker-compose*.yml

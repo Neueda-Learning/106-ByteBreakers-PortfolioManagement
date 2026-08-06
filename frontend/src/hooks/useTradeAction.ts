@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { API_BASE_URL } from "../api/config";
 
 export type TradeAction = "buy" | "sell";
 
@@ -9,8 +10,6 @@ interface ExecuteTradePayload {
   currentPrice: number;
   action: TradeAction;
 }
-
-const API_BASE_URL = "http://localhost:8081/api/v1";
 
 export function useTradeAction() {
   const [submitting, setSubmitting] = useState(false);
@@ -24,7 +23,7 @@ export function useTradeAction() {
     setSubmitting(true);
 
     try {
-      await axios.put(`${API_BASE_URL}/${action}`, {
+      await axios.put(`${API_BASE_URL}/api/v1/${action}`, {
         optionId,
         quantity,
         currentPrice,

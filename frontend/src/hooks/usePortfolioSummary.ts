@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../api/config";
 
 export interface RecentInvestment {
   name: string;
@@ -27,7 +28,8 @@ export function usePortfolioSummary() {
     const fetchSummary = async () => {
       try {
         const response = await axios.get<PortfolioSummary>(
-          "http://localhost:8081/api/portfolio/summary",
+          `${API_BASE_URL}/api/portfolio/summary`,
+
         );
         setSummary(response.data ?? null);
       } catch {

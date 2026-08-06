@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { API_BASE_URL } from '../api/config'
 
 interface InvestmentOption {
     id: number
@@ -18,7 +19,7 @@ export function useInvestments() {
     useEffect(() => {
         const fetchInvestments = async () => {
             try {
-                const response = await axios.get<InvestmentOption[]>('http://localhost:8081/investment-options/')
+                const response = await axios.get<InvestmentOption[]>(`${API_BASE_URL}/investment-options/`)
                 setInvestments(Array.isArray(response.data) ? response.data : [])
             } catch {
                 setInvestments([])

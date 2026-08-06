@@ -1,0 +1,200 @@
+# ============================================
+# Docker Compose Configuration
+# ============================================
+# Orchestrates the complete Portfolio Manager stack:
+# - MySQL 8.0 Database
+# - Spring Boot Backend (Port 8081 on host)
+# - React/Vite Frontend (Port 8082 on host)
+#
+# Run with: docker-compose up -d
+# Stop with: docker-compose down
+# View logs: docker-compose logs -f [service-name]
+
+version: '3.9'
+
+# ============================================
+# Services
+# ============================================
+services:
+  
+  # ============================================
+  # MySQL Database Service
+  # ============================================
+  mysql:
+    image: mysql:8.0
+    
+    # Container name for easy reference
+    container_name: portfolio-mysql
+    
+    # Environment variables for MySQL initialization
+    environment:
+      # Root user password
+      MYSQL_ROOT_PASSWORD: n3u3da!
+      # Database to create on startup
+      MYSQL_DATABASE: portfolio_manager
+      # Allow connection from any host
+      MYSQL_HOST: '%'
+    
+    # Port mapping (internal:external)
+    # MySQL runs on port 3306 inside the container
+    # Not typically exposed to host, but available for debugging if needed
+    # ports:
+    #   - "3306:3306"
+    
+    # Named volume for persistent storage
+    # Data survives container restarts and removal
+    # Location inside container: /var/lib/mysql
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # Optionally, copy initialization scripts
+      # - ./Backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      # - ./Backend/src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    
+    # Docker network for service-to-service communication
+    networks:
+      - portfolionet
+    
+    # Restart policy - restart unless explicitly stopped
+    restart: unless-stopped
+    
+    # Health check to verify MySQL is ready
+    # Executes mysqladmin ping to check database connectivity
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-pn3u3da!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    
+    # Logging driver and options
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # Spring Boot Backend Service
+  # ============================================
+  backend:
+    # Build configuration
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    
+    # Container name for easy reference
+    container_name: portfolio-backend
+    
+    # Depends on MySQL being healthy before starting
+    # Docker Compose will wait for MySQL health check to pass
+    depends_on:
+      mysql:
+        condition: service_healthy
+    
+    # Environment variables passed to Spring Boot application
+    environment:
+      # Spring active profile - loads application-docker.properties
+      SPRING_PROFILES_ACTIVE: docker
+      # Database connection string (uses 'mysql' service name for DNS resolution)
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/portfolio_manager
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: n3u3da!
+    
+    # Port mapping (host:container)
+    # External access on host port 8081
+    # Internal container port 8080
+    ports:
+      - "8081:8080"
+    
+    # Docker network for service-to-service communication
+    # Services can reach each other using service names
+    networks:
+      - portfolionet
+    
+    # Restart policy - restart unless explicitly stopped
+    restart: unless-stopped
+    
+    # Health check for backend application
+    # Waits 40 seconds before first check (application startup time)
+    # Checks every 30 seconds
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    
+    # Logging driver and options
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # React/Vite Frontend Service (Nginx)
+  # ============================================
+  frontend:
+    # Build configuration
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    
+    # Container name for easy reference
+    container_name: portfolio-frontend
+    
+    # Depends on backend being healthy before starting
+    # Ensures API is available when frontend starts
+    depends_on:
+      backend:
+        condition: service_healthy
+    
+    # Port mapping (host:container)
+    # External access on host port 8082
+    # Internal container port 80 (Nginx)
+    ports:
+      - "8082:80"
+    
+    # Docker network for service-to-service communication
+    networks:
+      - portfolionet
+    
+    # Restart policy - restart unless explicitly stopped
+    restart: unless-stopped
+    
+    # Health check for frontend application
+    # Checks if index.html is accessible via HTTP
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://localhost/index.html"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
+    # Logging driver and options
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ============================================
+# Networks
+# ============================================
+# Custom bridge network enables DNS-based service discovery
+# All services can communicate using service names instead of IP addresses
+networks:
+  portfolionet:
+    driver: bridge
+    # Explicitly name the network for easier debugging
+    name: portfolio-network
+
+# ============================================
+# Volumes
+# ============================================
+# Named volume for MySQL persistent storage
+# Docker manages the location (usually /var/lib/docker/volumes/...)
+# Survives container restarts and removal
+volumes:
+  mysql-data:
+    driver: local
