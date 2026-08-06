@@ -30,6 +30,15 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(InvestmentOptionNotFoundException.class)
+    public ResponseEntity<String> handleInvestmentOptionNotFoundException(
+            InvestmentOptionNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> genericHandleException(Exception ex) {

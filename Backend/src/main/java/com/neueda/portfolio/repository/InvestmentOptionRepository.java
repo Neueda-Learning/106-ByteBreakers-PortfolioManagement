@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import com.neueda.portfolio.exception.InvestmentOptionNotFoundException;
 
 import java.util.List;
 
@@ -38,10 +39,18 @@ public class InvestmentOptionRepository {
 
     public InvestmentOption findById(Long id) {
         String sql = "SELECT id, name, category, current_price, trend, estimated_return, volatility FROM investment_options WHERE id = ?";
+
         try {
-            return jdbcTemplate.queryForObject(sql, ROW_MAPPER, id);
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    ROW_MAPPER,
+                    id
+            );
+
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            throw new InvestmentOptionNotFoundException(
+                    "Investment option with id " + id + " not found"
+            );
         }
     }
 
