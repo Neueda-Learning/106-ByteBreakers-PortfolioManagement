@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import com.neueda.portfolio.exception.TransactionHistoryNotFoundException;
 
 import java.util.List;
 
@@ -73,7 +74,9 @@ public class TransactionHistoryRepository {
                     id
             );
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            throw new TransactionHistoryNotFoundException(
+                    "Transaction history with id " + id + " not found"
+            );
         }
     }
 
