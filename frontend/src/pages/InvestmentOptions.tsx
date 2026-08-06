@@ -132,6 +132,7 @@ const InvestmentOptions = () => {
       {
         accessorKey: "currentPrice",
         header: "Current Price",
+        meta: { align: "right" },
         cell: ({ row }) => formatCurrency(row.original.currentPrice),
       },
       {
@@ -159,6 +160,7 @@ const InvestmentOptions = () => {
       {
         accessorKey: "estimatedReturn",
         header: "Est. Return",
+        meta: { align: "right" },
         cell: ({ row }) => (
           <Text fw={600} c="green">
             {row.original.estimatedReturn.toFixed(1)}%

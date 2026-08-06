@@ -31,10 +31,6 @@ const Sidebar = () => {
           />
         ))}
       </Stack>
-
-      <Text c="dimmed" size="xs" mt="auto">
-        Spring Boot Training Project
-      </Text>
     </AppShell.Navbar>
   );
 };
