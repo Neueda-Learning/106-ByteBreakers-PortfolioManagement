@@ -12,6 +12,7 @@ import {
   Title,
 } from "@mantine/core";
 import axios from "axios";
+import { API_BASE_URL } from "@/api/config";
 
 import {
   showToast,
@@ -35,8 +36,6 @@ interface SelectedSuggestion {
   name: string;
   currentPrice: number;
 }
-
-const API_BASE_URL = "http://localhost:8081/api/portfolio";
 
 const formatScore = (score: number) => `${(Number(score) * 100).toFixed(1)}%`;
 
