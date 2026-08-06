@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
+import { API_BASE_URL } from "../api/config";
 
 export interface InvestmentDetail {
   id: number;
@@ -31,7 +32,7 @@ export function useInvestmentDetails(id?: number) {
 
     try {
       const response = await axios.get<InvestmentDetail>(
-        `http://localhost:8081/investment-options/${id}/holdings`,
+        `${API_BASE_URL}/investment-options/${id}/holdings`,
       );
       setInvestment(response.data ?? null);
     } catch {

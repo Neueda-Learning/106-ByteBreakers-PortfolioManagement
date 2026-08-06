@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../api/config";
 
 export interface MyInvestment {
   name: string;
@@ -17,7 +18,7 @@ export function useMyInvestments() {
     const fetchMyInvestments = async () => {
       try {
         const response = await axios.get<MyInvestment[]>(
-          "http://localhost:8081/api/v1/investment",
+          `${API_BASE_URL}/api/v1/investment`,
         );
         setInvestments(Array.isArray(response.data) ? response.data : []);
       } catch {
