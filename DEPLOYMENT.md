@@ -45,12 +45,14 @@ docker-compose ps
 ### Required Software
 
 1. **Docker** v20.10+
+
    ```bash
    # Verify installation
    docker --version
    ```
 
 2. **Docker Compose** v1.29+
+
    ```bash
    # Verify installation
    docker-compose --version
@@ -103,13 +105,13 @@ docker-compose ps
 
 ### Services Overview
 
-| Service | Image | Port (Host) | Port (Container) | Purpose |
-|---------|-------|-------------|-----------------|---------|
-| **MySQL** | `mysql:8.0` | 3306* | 3306 | Database storage |
-| **Backend** | `portfolio-backend:latest` | 8081 | 8080 | Spring Boot REST API |
-| **Frontend** | `portfolio-frontend:latest` | 8082 | 80 | React/Vite SPA + Nginx |
+| Service      | Image                       | Port (Host) | Port (Container) | Purpose                |
+| ------------ | --------------------------- | ----------- | ---------------- | ---------------------- |
+| **MySQL**    | `mysql:8.0`                 | 3306\*      | 3306             | Database storage       |
+| **Backend**  | `portfolio-backend:latest`  | 8081        | 8080             | Spring Boot REST API   |
+| **Frontend** | `portfolio-frontend:latest` | 8082        | 80               | React/Vite SPA + Nginx |
 
-*MySQL port not exposed to host for security; only accessible via Docker network
+\*MySQL port not exposed to host for security; only accessible via Docker network
 
 ### Networking
 
@@ -247,6 +249,7 @@ docker-compose ps
 ```
 
 **Expected Output:**
+
 ```
 NAME            COMMAND                  SERVICE      STATUS      PORTS
 portfolio-mysql        "docker-entrypoint.s…"   mysql       Up 30s      3306/tcp
@@ -291,6 +294,7 @@ docker-compose logs --tail=100
 ### Setup
 
 1. **Install Jenkins** on Linux server (if not already installed)
+
    ```bash
    # Jenkins runs on http://10.9.64.59:8080
    ```
@@ -324,6 +328,7 @@ The Jenkinsfile includes 9 automated stages:
 ### Triggering Pipeline
 
 **Option 1: Push to Branch**
+
 ```bash
 # Commit to feature/deployment branch
 git checkout -b feature/deployment
@@ -334,6 +339,7 @@ git push origin feature/deployment
 ```
 
 **Option 2: Trigger Manually**
+
 - Go to Jenkins UI
 - Select `Portfolio-Manager-Deployment` job
 - Click "Build Now"
@@ -480,6 +486,7 @@ docker volume prune
 **Solutions**:
 
 1. Check container logs:
+
    ```bash
    docker-compose logs mysql
    docker-compose logs backend
@@ -487,11 +494,13 @@ docker volume prune
    ```
 
 2. Check disk space:
+
    ```bash
    df -h
    ```
 
 3. Check Docker daemon:
+
    ```bash
    docker ps  # Should work without errors
    ```
@@ -510,16 +519,19 @@ docker volume prune
 **Solutions**:
 
 1. Check MySQL status:
+
    ```bash
    docker-compose ps mysql
    ```
 
 2. Wait for health check to pass (30-60 seconds):
+
    ```bash
    docker-compose logs -f mysql
    ```
 
 3. Restart MySQL:
+
    ```bash
    docker-compose restart mysql
    ```
@@ -534,23 +546,27 @@ docker volume prune
 **Symptom**: Frontend displays API error messages
 
 **Causes**:
+
 - Backend service not healthy
 - API endpoint misconfigured
 
 **Solutions**:
 
 1. Check backend health:
+
    ```bash
    curl http://localhost:8081/actuator/health
    ```
 
 2. Check frontend API configuration:
+
    ```bash
    # Verify .env.production has correct API_BASE_URL
    cat frontend/.env.production
    ```
 
 3. Rebuild frontend with new configuration:
+
    ```bash
    docker-compose build frontend
    docker-compose up -d frontend
@@ -569,10 +585,11 @@ docker volume prune
 
 ```yaml
 ports:
-  - "8083:8080"  # Change 8081 to 8083 if 8081 is in use
+  - "8083:8080" # Change 8081 to 8083 if 8081 is in use
 ```
 
 Then restart:
+
 ```bash
 docker-compose up -d
 ```
@@ -584,12 +601,14 @@ docker-compose up -d
 **Solutions**:
 
 1. Clean up Docker:
+
    ```bash
    docker system prune -a
    docker volume prune
    ```
 
 2. Remove old images:
+
    ```bash
    docker image ls
    docker rmi <image-id>
@@ -610,6 +629,7 @@ docker-compose up -d
    - Jenkins UI → Build → Console Output
 
 2. Check logs:
+
    ```bash
    docker-compose logs -f
    ```
@@ -618,6 +638,7 @@ docker-compose up -d
    - Jenkins UI → Replay Build
 
 4. Debug locally:
+
    ```bash
    # Build backend locally
    cd Backend
@@ -654,10 +675,10 @@ backend:
   deploy:
     resources:
       limits:
-        cpus: '1'
+        cpus: "1"
         memory: 1G
       reservations:
-        cpus: '0.5'
+        cpus: "0.5"
         memory: 512M
 ```
 
@@ -680,6 +701,7 @@ backend:
 ### Production Security
 
 1. **Use Environment Variables for Secrets**
+
    ```bash
    # Instead of hardcoding credentials, use:
    export MYSQL_ROOT_PASSWORD=your-secure-password
@@ -708,6 +730,7 @@ backend:
 ### Monitoring & Logging
 
 1. **Container Logs**
+
    ```bash
    docker-compose logs -f
    ```
@@ -745,12 +768,14 @@ docker-compose exec -T mysql mysql -u root -pn3u3da! portfolio_manager < backup.
 ### Docker Compose Best Practices
 
 1. **Use Specific Image Versions**
+
    ```yaml
    image: mysql:8.0.32  # Not 8.0 (latest)
    image: nginx:1.25-alpine  # Specific version
    ```
 
 2. **Enable BuildKit for Faster Builds**
+
    ```bash
    export DOCKER_BUILDKIT=1
    docker build -t portfolio-backend:latest ./Backend

@@ -29,7 +29,6 @@ export function usePortfolioSummary() {
       try {
         const response = await axios.get<PortfolioSummary>(
           `${API_BASE_URL}/api/portfolio/summary`,
-
         );
         setSummary(response.data ?? null);
       } catch {

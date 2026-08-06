@@ -10,22 +10,21 @@
 # Stop with: docker-compose down
 # View logs: docker-compose logs -f [service-name]
 
-version: '3.9'
+version: "3.9"
 
 # ============================================
 # Services
 # ============================================
 services:
-  
   # ============================================
   # MySQL Database Service
   # ============================================
   mysql:
     image: mysql:8.0
-    
+
     # Container name for easy reference
     container_name: portfolio-mysql
-    
+
     # Environment variables for MySQL initialization
     environment:
       # Root user password
@@ -33,14 +32,14 @@ services:
       # Database to create on startup
       MYSQL_DATABASE: portfolio_manager
       # Allow connection from any host
-      MYSQL_HOST: '%'
-    
+      MYSQL_HOST: "%"
+
     # Port mapping (internal:external)
     # MySQL runs on port 3306 inside the container
     # Not typically exposed to host, but available for debugging if needed
     # ports:
     #   - "3306:3306"
-    
+
     # Named volume for persistent storage
     # Data survives container restarts and removal
     # Location inside container: /var/lib/mysql
@@ -49,14 +48,14 @@ services:
       # Optionally, copy initialization scripts
       # - ./Backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       # - ./Backend/src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql
-    
+
     # Docker network for service-to-service communication
     networks:
       - portfolionet
-    
+
     # Restart policy - restart unless explicitly stopped
     restart: unless-stopped
-    
+
     # Health check to verify MySQL is ready
     # Executes mysqladmin ping to check database connectivity
     healthcheck:
@@ -65,7 +64,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    
+
     # Logging driver and options
     logging:
       driver: "json-file"
@@ -81,16 +80,16 @@ services:
     build:
       context: ./Backend
       dockerfile: Dockerfile
-    
+
     # Container name for easy reference
     container_name: portfolio-backend
-    
+
     # Depends on MySQL being healthy before starting
     # Docker Compose will wait for MySQL health check to pass
     depends_on:
       mysql:
         condition: service_healthy
-    
+
     # Environment variables passed to Spring Boot application
     environment:
       # Spring active profile - loads application-docker.properties
@@ -99,21 +98,21 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/portfolio_manager
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: n3u3da!
-    
+
     # Port mapping (host:container)
     # External access on host port 8081
     # Internal container port 8080
     ports:
       - "8081:8080"
-    
+
     # Docker network for service-to-service communication
     # Services can reach each other using service names
     networks:
       - portfolionet
-    
+
     # Restart policy - restart unless explicitly stopped
     restart: unless-stopped
-    
+
     # Health check for backend application
     # Waits 40 seconds before first check (application startup time)
     # Checks every 30 seconds
@@ -123,7 +122,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 40s
-    
+
     # Logging driver and options
     logging:
       driver: "json-file"
@@ -139,29 +138,29 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    
+
     # Container name for easy reference
     container_name: portfolio-frontend
-    
+
     # Depends on backend being healthy before starting
     # Ensures API is available when frontend starts
     depends_on:
       backend:
         condition: service_healthy
-    
+
     # Port mapping (host:container)
     # External access on host port 8082
     # Internal container port 80 (Nginx)
     ports:
       - "8082:80"
-    
+
     # Docker network for service-to-service communication
     networks:
       - portfolionet
-    
+
     # Restart policy - restart unless explicitly stopped
     restart: unless-stopped
-    
+
     # Health check for frontend application
     # Checks if index.html is accessible via HTTP
     healthcheck:
@@ -170,7 +169,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    
+
     # Logging driver and options
     logging:
       driver: "json-file"
