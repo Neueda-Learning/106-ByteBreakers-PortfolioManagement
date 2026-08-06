@@ -136,7 +136,7 @@ const Investments = () => {
       },
       {
         id: "currentValue",
-        header: "Current Value",
+        header: "Holdings",
         cell: ({ row }) =>
           formatCurrency(
             toNumber(row.original.currentPrice) *

@@ -181,7 +181,6 @@ const InvestmentDetails = () => {
               <Group justify="space-between" align="flex-start">
                 <div>
                   <Title order={2}>{investment.name}</Title>
-                  <Text c="dimmed">User investment table</Text>
                 </div>
 
                 <Stack gap="xs" align="flex-end">
@@ -241,16 +240,23 @@ const InvestmentDetails = () => {
                     <Text size="sm">
                       Total Invested: {formatCurrency(investment.totalInvested)}
                     </Text>
-                    <Text
-                      size="sm"
-                      c={
-                        toNumber(investment.currentProfitLoss) >= 0
-                          ? "green"
-                          : "red"
-                      }
-                    >
-                      Current Profit/Loss:{" "}
-                      {formatCurrency(investment.currentProfitLoss)}
+                    <Text size="sm">
+                      Returns:{" "}
+                      <Text
+                        component="span"
+                        c={
+                          toNumber(investment.currentProfitLoss) >= 0
+                            ? "green"
+                            : "red"
+                        }
+                      >
+                        {toNumber(investment.currentProfitLoss) >= 0
+                          ? "+"
+                          : "-"}
+                        {formatCurrency(
+                          Math.abs(toNumber(investment.currentProfitLoss)),
+                        )}
+                      </Text>
                     </Text>
                   </Stack>
                 </SectionCard>
@@ -284,17 +290,6 @@ const InvestmentDetails = () => {
                   )}
                 </Stack>
               </SectionCard>
-
-              <Group c="dimmed" gap={6}>
-                {toNumber(investment.currentProfitLoss) >= 0 ? (
-                  <IconTrendingUp size={16} color="green" />
-                ) : (
-                  <IconTrendingDown size={16} color="red" />
-                )}
-                <Text size="sm">
-                  Holdings performance updates with latest pricing.
-                </Text>
-              </Group>
             </Stack>
           </SectionCard>
         </SimpleGrid>
