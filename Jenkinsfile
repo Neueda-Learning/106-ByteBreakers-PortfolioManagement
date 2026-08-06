@@ -102,6 +102,7 @@ pipeline {
                     sh '''
                         echo "Running: mvn clean package -DskipTests"
                         if [ -f "mvnw" ]; then
+                            chmod +x ./mvnw
                             ./mvnw clean package -DskipTests
                         else
                             mvn clean package -DskipTests
@@ -132,6 +133,7 @@ pipeline {
                     sh '''
                         echo "Running: mvn test"
                         if [ -f "mvnw" ]; then
+                            chmod +x ./mvnw
                             ./mvnw test
                         else
                             mvn test
